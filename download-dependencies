@@ -1,0 +1,16 @@
+#!/bin/bash
+
+rm -rf repo
+mkdir -p repo
+wget http://www.thoughtworks.com/products/docs/go/current/help/resources/go-plugin-api-current.jar
+
+mvn org.apache.maven.plugins:maven-install-plugin:2.3.1:install-file \
+                         -Dfile=go-plugin-api-current.jar \
+                         -DgroupId=com.thoughtworks \
+                         -DartifactId=go-plugin-api \
+                         -Dversion=13.4.0 \
+                         -Dpackaging=jar \
+                         -DlocalRepositoryPath=repo
+
+rm go-plugin-api-current.jar
+
