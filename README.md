@@ -2,6 +2,8 @@
 
 A [Go](http://www.go.cd) plugin that polls a Puppet forge
 
+[![Build Status](https://travis-ci.org/drrb/go-forge-poller.svg?branch=master)](https://travis-ci.org/drrb/go-forge-poller)
+
 ## Building
 
 ```
