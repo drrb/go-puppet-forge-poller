@@ -2,6 +2,13 @@
 
 A [Go](http://www.go.cd) plugin that polls a Puppet forge
 
+## Building
+
+```
+$ ./download-dependencies.sh
+$ mvn package
+```
+
 ## Contributing
 
 1. Fork it
