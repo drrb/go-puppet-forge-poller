@@ -1,2 +1,2 @@
 language: java
-before_install: ./download-dependencies
+before_install: ./download-dependencies.sh
