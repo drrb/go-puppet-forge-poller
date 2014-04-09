@@ -1,16 +1,29 @@
-#!/bin/bash
+#!/bin/bash -ex
 
 rm -rf repo
 mkdir -p repo
 wget http://www.thoughtworks.com/products/docs/go/current/help/resources/go-plugin-api-current.jar
+wget http://www.thoughtworks.com/products/docs/go/current/help/resources/go-plugin-api-javadoc-current.jar
+
+go_version=`unzip -q -c go-plugin-api-current.jar META-INF/MANIFEST.MF | awk '/Go-Version/ {print $2}'`
 
 mvn org.apache.maven.plugins:maven-install-plugin:2.3.1:install-file \
                          -Dfile=go-plugin-api-current.jar \
                          -DgroupId=com.thoughtworks \
                          -DartifactId=go-plugin-api \
-                         -Dversion=13.4.0 \
+                         -Dversion=${go_version} \
+                         -Dpackaging=jar \
+                         -DlocalRepositoryPath=repo
+
+mvn org.apache.maven.plugins:maven-install-plugin:2.3.1:install-file \
+                         -Dfile=go-plugin-api-javadoc-current.jar \
+                         -DgroupId=com.thoughtworks \
+                         -DartifactId=go-plugin-api \
+                         -Dversion=${go_version} \
+                         -Dclassifier=javadoc \
                          -Dpackaging=jar \
                          -DlocalRepositoryPath=repo
 
 rm go-plugin-api-current.jar
+rm go-plugin-api-javadoc-current.jar
 
