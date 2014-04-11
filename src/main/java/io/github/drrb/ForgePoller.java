@@ -22,8 +22,39 @@ import com.thoughtworks.go.plugin.api.material.packagerepository.PackageMaterial
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
 import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
 import com.thoughtworks.go.plugin.api.response.Result;
+import io.github.drrb.forge.Forge;
 
 public class ForgePoller implements PackageMaterialPoller {
+    private final ForgeFactory forgeFactory;
+
+    public ForgePoller(ForgeFactory forgeFactory) {
+        this.forgeFactory = forgeFactory;
+    }
+
+    @Override
+    public Result checkConnectionToRepository(RepositoryConfiguration repositoryConfiguration) {
+        Forge forge = forgeFactory.build(repositoryConfiguration);
+        Result result = new Result();
+        try {
+            forge.ping();
+        } catch (Forge.PingFailure pingFailure) {
+            result = result.withErrorMessages(pingFailure.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public Result checkConnectionToPackage(PackageConfiguration packageConfiguration, RepositoryConfiguration repositoryConfiguration) {
+        Forge forge = forgeFactory.build(repositoryConfiguration);
+        Result result = new Result();
+        try {
+            forge.ping(packageConfiguration);
+        } catch (Forge.PingFailure pingFailure) {
+            result = result.withErrorMessages(pingFailure.getMessage());
+        }
+        return result;
+    }
+
     @Override
     public PackageRevision getLatestRevision(PackageConfiguration packageConfiguration, RepositoryConfiguration repositoryConfiguration) {
         return null;
@@ -31,16 +62,6 @@ public class ForgePoller implements PackageMaterialPoller {
 
     @Override
     public PackageRevision latestModificationSince(PackageConfiguration packageConfiguration, RepositoryConfiguration repositoryConfiguration, PackageRevision packageRevision) {
-        return null;
-    }
-
-    @Override
-    public Result checkConnectionToRepository(RepositoryConfiguration repositoryConfiguration) {
-        return null;
-    }
-
-    @Override
-    public Result checkConnectionToPackage(PackageConfiguration packageConfiguration, RepositoryConfiguration repositoryConfiguration) {
         return null;
     }
 }
