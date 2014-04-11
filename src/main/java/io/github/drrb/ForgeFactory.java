@@ -22,6 +22,6 @@ import io.github.drrb.forge.Forge;
 
 public class ForgeFactory {
     public Forge build(RepositoryConfiguration repoConfig) {
-        return null;
+        return new Forge(repoConfig);
     }
 }

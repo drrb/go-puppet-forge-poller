@@ -19,12 +19,25 @@ package io.github.drrb.forge;
 
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
+import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
+import io.github.drrb.ForgePollerPluginConfig;
 
 public class Forge {
     public static class PingFailure extends Exception {
+
         public PingFailure(String message) {
             super(message);
         }
+    }
+
+    private final RepositoryConfiguration repoConfig;
+
+    public Forge(RepositoryConfiguration repoConfig) {
+        this.repoConfig = repoConfig;
+    }
+
+    public String getUrl() {
+        return repoConfig.get(ForgePollerPluginConfig.FORGE_URL).getValue();
     }
 
     public void ping() throws PingFailure {
