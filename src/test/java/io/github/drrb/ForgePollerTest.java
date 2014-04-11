@@ -1,6 +1,24 @@
+/**
+ * Go Forge Poller
+ * Copyright (C) 2014 drrb
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Go Forge Poller. If not, see <http://www.gnu.org/licenses/>.
+ */
 package io.github.drrb;
 
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration;
+import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
 import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
 import com.thoughtworks.go.plugin.api.response.Result;
 import io.github.drrb.forge.Forge;
@@ -27,8 +45,9 @@ public class ForgePollerTest {
     @Mock
     private ForgeFactory forgeFactory;
 
-    private PackageConfiguration packageConfig;
     private RepositoryConfiguration repoConfig;
+    private PackageConfiguration packageConfig;
+    private PackageRevision packageVersion;
 
     @Before
     public void setUp() throws Exception {
@@ -49,7 +68,7 @@ public class ForgePollerTest {
 
     @Test
     public void shouldReturnFailureWhenForgeConnectionFails() throws Exception {
-        doThrow(new PingFailure("Connection refused")).when(forge).ping(packageConfig);
+        doThrow(new PingFailure("Connection refused")).when(forge).ping();
 
         Result result = poller.checkConnectionToRepository(repoConfig);
 
@@ -72,5 +91,23 @@ public class ForgePollerTest {
 
         assertThat(result.isSuccessful(), is(false));
         assertThat(result.getMessages(), hasItem(containsString("Not found")));
+    }
+
+    @Test
+    public void shouldReturnLatestVersionOfPackage() throws Exception {
+        when(forge.getLatestVersion(packageConfig)).thenReturn(packageVersion);
+
+        PackageRevision result = poller.getLatestRevision(packageConfig, repoConfig);
+
+        assertThat(result, is(packageVersion));
+    }
+
+    @Test
+    public void shouldReturnLatestVersionOfPackage() throws Exception {
+        when(forge.getLatestVersion(packageConfig)).thenReturn(packageVersion);
+
+        PackageRevision result = poller.getLatestRevision(packageConfig, repoConfig);
+
+        assertThat(result, is(packageVersion));
     }
 }
