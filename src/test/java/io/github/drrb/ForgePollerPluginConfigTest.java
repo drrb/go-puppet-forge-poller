@@ -42,6 +42,18 @@ public class ForgePollerPluginConfigTest {
     }
 
     @Test
+    public void shouldConstructRepoConfig() throws Exception {
+        RepositoryConfiguration repoConfig = config.getRepositoryConfiguration();
+        assertThat(repoConfig.get(FORGE_URL).getOption(DISPLAY_NAME), is("Forge URL"));
+    }
+
+    @Test
+    public void shouldConstructPackageConfig() throws Exception {
+        PackageConfiguration packageConfig = config.getPackageConfiguration();
+        assertThat(packageConfig.get(MODULE_NAME).getOption(DISPLAY_NAME), is("Module Name"));
+    }
+
+    @Test
     public void shouldAcceptRepoConfigIfForgeUrlSpecified() throws Exception {
         RepositoryConfiguration repoConfig = new RepositoryConfiguration();
         repoConfig.add(new Property(FORGE_URL, "http://forge.puppetlabs.com"));
