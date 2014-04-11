@@ -101,13 +101,4 @@ public class ForgePollerTest {
 
         assertThat(result, is(packageVersion));
     }
-
-    @Test
-    public void shouldReturnLatestVersionOfPackage() throws Exception {
-        when(forge.getLatestVersion(packageConfig)).thenReturn(packageVersion);
-
-        PackageRevision result = poller.getLatestRevision(packageConfig, repoConfig);
-
-        assertThat(result, is(packageVersion));
-    }
 }
