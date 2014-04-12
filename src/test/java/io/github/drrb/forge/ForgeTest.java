@@ -23,6 +23,7 @@ import com.google.api.client.testing.http.MockHttpTransport;
 import com.google.api.client.testing.http.MockLowLevelHttpRequest;
 import com.google.api.client.testing.http.MockLowLevelHttpResponse;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration;
+import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
 import com.thoughtworks.go.plugin.api.material.packagerepository.Property;
 import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
 import org.junit.Before;
@@ -34,6 +35,8 @@ import java.util.Map;
 
 import static io.github.drrb.ForgePollerPluginConfig.FORGE_URL;
 import static io.github.drrb.ForgePollerPluginConfig.MODULE_NAME;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class ForgeTest {
     private Forge forge;
@@ -85,5 +88,15 @@ public class ForgeTest {
     public void shouldRaiseExceptionIfPackagePingReturnsAnError() throws Exception {
         responses.put("http://forge.example.com/puppetlabs/apache.json", new MockLowLevelHttpResponse().setStatusCode(404));
         forge.ping(packageConfig);
+    }
+
+    @Test
+    public void shouldReturnLatestRelease() throws Exception {
+        String metadata = "{\"releases\":[{\"version\":\"1.0.1\"},{\"version\":\"1.0.10\"},{\"version\":\"0.11.0\"}]}";
+        MockLowLevelHttpResponse response = new MockLowLevelHttpResponse().setStatusCode(200).setContent(metadata);
+        responses.put("http://forge.example.com/puppetlabs/apache.json", response);
+
+        PackageRevision latestVersion = forge.getLatestVersion(packageConfig);
+        assertThat(latestVersion.getRevision(), is("1.0.10"));
     }
 }
