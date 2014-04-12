@@ -25,8 +25,6 @@ import org.junit.Test;
 
 import static io.github.drrb.ForgePollerPluginConfig.FORGE_URL;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 public class ForgeFactoryTest {

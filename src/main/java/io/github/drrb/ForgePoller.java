@@ -63,6 +63,7 @@ public class ForgePoller implements PackageMaterialPoller {
 
     @Override
     public PackageRevision latestModificationSince(PackageConfiguration packageConfiguration, RepositoryConfiguration repositoryConfiguration, PackageRevision packageRevision) {
-        return null;
+        Forge forge = forgeFactory.build(repositoryConfiguration);
+        return forge.getLatestVersion(packageConfiguration);
     }
 }

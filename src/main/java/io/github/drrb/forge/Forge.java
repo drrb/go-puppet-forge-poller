@@ -17,10 +17,18 @@
  */
 package io.github.drrb.forge;
 
+import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpResponse;
+import com.google.api.client.http.HttpResponseException;
+import com.google.api.client.http.HttpTransport;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
 import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
 import io.github.drrb.ForgePollerPluginConfig;
+
+import java.io.IOException;
+
+import static io.github.drrb.ForgePollerPluginConfig.MODULE_NAME;
 
 public class Forge {
     public static class PingFailure extends Exception {
@@ -28,12 +36,18 @@ public class Forge {
         public PingFailure(String message) {
             super(message);
         }
+
+        public PingFailure(String message, Throwable cause) {
+            super(message, cause);
+        }
     }
 
     private final RepositoryConfiguration repoConfig;
+    private final HttpTransport httpTransport;
 
-    public Forge(RepositoryConfiguration repoConfig) {
+    public Forge(RepositoryConfiguration repoConfig, HttpTransport httpTransport) {
         this.repoConfig = repoConfig;
+        this.httpTransport = httpTransport;
     }
 
     public String getUrl() {
@@ -41,12 +55,29 @@ public class Forge {
     }
 
     public void ping() throws PingFailure {
+        ping(getUrl());
     }
 
     public void ping(PackageConfiguration packageConfig) throws PingFailure {
+        ping(getUrl() + "/" + packageConfig.get(MODULE_NAME).getValue() + ".json");
     }
 
     public PackageRevision getLatestVersion(PackageConfiguration packageConfig) {
         return null;
+    }
+
+    private void ping(String url) throws PingFailure {
+        try {
+            get(url);
+        } catch (HttpResponseException e) {
+            //TODO: Improve this message
+            throw new PingFailure("Failed to connect to Forge", e);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private HttpResponse get(String url) throws IOException {
+        return httpTransport.createRequestFactory().buildGetRequest(new GenericUrl(url)).execute();
     }
 }

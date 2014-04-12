@@ -55,6 +55,7 @@ public class ForgePollerTest {
 
         packageConfig = new PackageConfiguration();
         repoConfig = new RepositoryConfiguration();
+        packageVersion = mock(PackageRevision.class);
 
         when(forgeFactory.build(repoConfig)).thenReturn(forge);
     }
@@ -98,6 +99,15 @@ public class ForgePollerTest {
         when(forge.getLatestVersion(packageConfig)).thenReturn(packageVersion);
 
         PackageRevision result = poller.getLatestRevision(packageConfig, repoConfig);
+
+        assertThat(result, is(packageVersion));
+    }
+
+    @Test
+    public void shouldReturnLatestVersionOfPackageWhenReturningLatestModification() throws Exception {
+        when(forge.getLatestVersion(packageConfig)).thenReturn(packageVersion);
+
+        PackageRevision result = poller.latestModificationSince(packageConfig, repoConfig, mock(PackageRevision.class));
 
         assertThat(result, is(packageVersion));
     }

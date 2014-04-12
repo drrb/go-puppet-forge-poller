@@ -17,11 +17,12 @@
  */
 package io.github.drrb;
 
+import com.google.api.client.http.javanet.NetHttpTransport;
 import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
 import io.github.drrb.forge.Forge;
 
 public class ForgeFactory {
     public Forge build(RepositoryConfiguration repoConfig) {
-        return new Forge(repoConfig);
+        return new Forge(repoConfig, new NetHttpTransport());
     }
 }

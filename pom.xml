@@ -92,6 +92,12 @@
             <groupId>com.thoughtworks</groupId>
             <artifactId>go-plugin-api</artifactId>
             <version>13.4.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.http-client</groupId>
+            <artifactId>google-http-client</artifactId>
+            <version>1.18.0-rc</version>
         </dependency>
 
         <!-- Test Dependencies -->
