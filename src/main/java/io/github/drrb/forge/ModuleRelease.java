@@ -32,6 +32,11 @@ public class ModuleRelease extends GenericJson {
         return version;
     }
 
+    public ModuleRelease withVersion(String version) {
+        this.version = version;
+        return this;
+    }
+
     public static Comparator<ModuleRelease> versionComparator() {
         return new Comparator<ModuleRelease>() {
             @Override

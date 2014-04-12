@@ -41,6 +41,6 @@ public class ForgeFactoryTest {
         RepositoryConfiguration repoConfig = new RepositoryConfiguration();
         repoConfig.add(new Property(FORGE_URL, "http://forge.example.com"));
         Forge forge = forgeFactory.build(repoConfig);
-        assertThat(forge.getUrl(), is("http://forge.example.com"));
+        assertThat(forge.getUrl().toString(), is("http://forge.example.com"));
     }
 }

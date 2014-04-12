@@ -19,15 +19,18 @@ package io.github.drrb;
 
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
+import com.thoughtworks.go.plugin.api.material.packagerepository.Property;
 import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
 import com.thoughtworks.go.plugin.api.response.Result;
 import io.github.drrb.forge.Forge;
+import io.github.drrb.forge.ModuleRelease;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static io.github.drrb.ForgePollerPluginConfig.MODULE_NAME;
 import static io.github.drrb.forge.Forge.PingFailure;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -47,15 +50,16 @@ public class ForgePollerTest {
 
     private RepositoryConfiguration repoConfig;
     private PackageConfiguration packageConfig;
-    private PackageRevision packageVersion;
+    private ModuleRelease moduleRelease;
 
     @Before
     public void setUp() throws Exception {
         poller = new ForgePoller(forgeFactory);
 
-        packageConfig = new PackageConfiguration();
         repoConfig = new RepositoryConfiguration();
-        packageVersion = mock(PackageRevision.class);
+        packageConfig = new PackageConfiguration();
+        packageConfig.add(new Property(MODULE_NAME, "puppetlabs/apache"));
+        moduleRelease = new ModuleRelease().withVersion("1.0.0");
 
         when(forgeFactory.build(repoConfig)).thenReturn(forge);
     }
@@ -86,7 +90,7 @@ public class ForgePollerTest {
 
     @Test
     public void shouldReturnFailureWhenPackageConnectionFails() throws Exception {
-        doThrow(new PingFailure("Not found")).when(forge).ping(packageConfig);
+        doThrow(new PingFailure("Not found")).when(forge).ping("puppetlabs/apache");
 
         Result result = poller.checkConnectionToPackage(packageConfig, repoConfig);
 
@@ -96,19 +100,20 @@ public class ForgePollerTest {
 
     @Test
     public void shouldReturnLatestVersionOfPackage() throws Exception {
-        when(forge.getLatestVersion(packageConfig)).thenReturn(packageVersion);
+        when(forge.getLatestVersion("puppetlabs/apache")).thenReturn(moduleRelease);
 
         PackageRevision result = poller.getLatestRevision(packageConfig, repoConfig);
 
-        assertThat(result, is(packageVersion));
+        assertThat(result.getRevision(), is("1.0.0"));
     }
 
     @Test
     public void shouldReturnLatestVersionOfPackageWhenReturningLatestModification() throws Exception {
-        when(forge.getLatestVersion(packageConfig)).thenReturn(packageVersion);
+        when(forge.getLatestVersion("puppetlabs/apache")).thenReturn(moduleRelease);
 
         PackageRevision result = poller.latestModificationSince(packageConfig, repoConfig, mock(PackageRevision.class));
 
-        assertThat(result, is(packageVersion));
+        assertThat(result.getRevision(), is("1.0.0"));
     }
+
 }

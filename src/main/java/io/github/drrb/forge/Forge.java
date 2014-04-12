@@ -20,16 +20,11 @@ package io.github.drrb.forge;
 import com.google.api.client.http.*;
 import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration;
-import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
-import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
-import io.github.drrb.ForgePollerPluginConfig;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.Collections;
 import java.util.LinkedList;
-
-import static io.github.drrb.ForgePollerPluginConfig.MODULE_NAME;
 
 public class Forge {
     public static class PingFailure extends Exception {
@@ -43,40 +38,40 @@ public class Forge {
         }
     }
 
-    private final RepositoryConfiguration repoConfig;
+    private final String forgeUrl;
     private final HttpTransport httpTransport;
 
-    public Forge(RepositoryConfiguration repoConfig, HttpTransport httpTransport) {
-        this.repoConfig = repoConfig;
+    public Forge(String forgeUrl, HttpTransport httpTransport) {
+        this.forgeUrl = forgeUrl;
         this.httpTransport = httpTransport;
     }
 
-    public String getUrl() {
-        return repoConfig.get(ForgePollerPluginConfig.FORGE_URL).getValue();
+    public URI getUrl() {
+        return URI.create(forgeUrl);
     }
 
     public void ping() throws PingFailure {
         ping(getUrl());
     }
 
-    public void ping(PackageConfiguration packageConfig) throws PingFailure {
-        ping(moduleUrl(packageConfig));
+    //TODO: accept package name instead of Go API class
+    public void ping(String moduleName) throws PingFailure {
+        ping(moduleUrl(moduleName));
     }
 
-    public PackageRevision getLatestVersion(PackageConfiguration packageConfig) {
+    public ModuleRelease getLatestVersion(String moduleName) {
         try {
-            HttpResponse response = get(moduleUrl(packageConfig));
+            HttpResponse response = get(moduleUrl(moduleName));
             ModuleMetadata moduleMetadata = response.parseAs(ModuleMetadata.class);
             LinkedList<ModuleRelease> releases = moduleMetadata.getReleases();
             Collections.sort(releases, ModuleRelease.versionComparator());
-            ModuleRelease latestRelease = releases.getLast();
-            return new PackageRevision(latestRelease.getVersion(), null, null);
+            return releases.getLast();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void ping(String url) throws PingFailure {
+    private void ping(URI url) throws PingFailure {
         try {
             get(url);
         } catch (HttpResponseException e) {
@@ -87,11 +82,13 @@ public class Forge {
         }
     }
 
-    private String moduleUrl(PackageConfiguration packageConfig) {
-        return getUrl() + "/" + packageConfig.get(MODULE_NAME).getValue() + ".json";
+    private URI moduleUrl(String moduleName) {
+        //TODO: this will fail
+        String url = getUrl() + "/" + moduleName + ".json";
+        return URI.create(url);
     }
 
-    private HttpResponse get(String url) throws IOException {
+    private HttpResponse get(URI url) throws IOException {
         HttpRequestFactory requestFactory = httpTransport.createRequestFactory();
         HttpRequest request = requestFactory.buildGetRequest(new GenericUrl(url));
         request.setParser(new JsonObjectParser(new JacksonFactory()));

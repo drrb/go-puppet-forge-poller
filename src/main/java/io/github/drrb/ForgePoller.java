@@ -23,6 +23,9 @@ import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision
 import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
 import com.thoughtworks.go.plugin.api.response.Result;
 import io.github.drrb.forge.Forge;
+import io.github.drrb.forge.ModuleRelease;
+
+import static io.github.drrb.ForgePollerPluginConfig.MODULE_NAME;
 
 public class ForgePoller implements PackageMaterialPoller {
     private final ForgeFactory forgeFactory;
@@ -48,7 +51,7 @@ public class ForgePoller implements PackageMaterialPoller {
         Forge forge = forgeFactory.build(repositoryConfiguration);
         Result result = new Result();
         try {
-            forge.ping(packageConfiguration);
+            forge.ping(packageConfiguration.get(MODULE_NAME).getValue());
         } catch (Forge.PingFailure pingFailure) {
             result = result.withErrorMessages(pingFailure.getMessage());
         }
@@ -58,12 +61,14 @@ public class ForgePoller implements PackageMaterialPoller {
     @Override
     public PackageRevision getLatestRevision(PackageConfiguration packageConfiguration, RepositoryConfiguration repositoryConfiguration) {
         Forge forge = forgeFactory.build(repositoryConfiguration);
-        return forge.getLatestVersion(packageConfiguration);
+        ModuleRelease latestRelease = forge.getLatestVersion(packageConfiguration.get(MODULE_NAME).getValue());
+        return new PackageRevision(latestRelease.getVersion(), null, null);
     }
 
     @Override
     public PackageRevision latestModificationSince(PackageConfiguration packageConfiguration, RepositoryConfiguration repositoryConfiguration, PackageRevision packageRevision) {
         Forge forge = forgeFactory.build(repositoryConfiguration);
-        return forge.getLatestVersion(packageConfiguration);
+        ModuleRelease latestRelease = forge.getLatestVersion(packageConfiguration.get(MODULE_NAME).getValue());
+        return new PackageRevision(latestRelease.getVersion(), null, null);
     }
 }

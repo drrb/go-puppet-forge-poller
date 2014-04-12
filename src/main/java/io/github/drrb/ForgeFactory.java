@@ -23,6 +23,7 @@ import io.github.drrb.forge.Forge;
 
 public class ForgeFactory {
     public Forge build(RepositoryConfiguration repoConfig) {
-        return new Forge(repoConfig, new NetHttpTransport());
+        String forgeUrl = repoConfig.get(ForgePollerPluginConfig.FORGE_URL).getValue();
+        return new Forge(forgeUrl, new NetHttpTransport());
     }
 }
