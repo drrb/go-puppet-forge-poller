@@ -75,7 +75,7 @@ public class ForgePollerPluginConfig implements PackageMaterialConfiguration {
         String moduleName = packageConfiguration.get(MODULE_NAME).getValue();
         if (moduleName == null || moduleName.trim().isEmpty()) {
             validationResult.addError(new ValidationError("Module name is required"));
-        } else if (! moduleName.matches("\\A.*/.*\\Z")) {
+        } else if (! moduleName.matches("\\A[a-z][a-z0-9_]*/[a-z][a-z0-9_]*\\Z")) {
             validationResult.addError(new ValidationError("Module name should be in format \"author/module\""));
         }
         return validationResult;
