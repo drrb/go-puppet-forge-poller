@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -45,6 +46,7 @@ public class ForgeTest {
                 return new MockLowLevelHttpRequest() {
                     @Override
                     public LowLevelHttpResponse execute() throws IOException {
+                        assertThat("Unexpected request to " + url, responses.keySet(), hasItem(url));
                         return responses.get(url);
                     }
                 };
