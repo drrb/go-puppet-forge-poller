@@ -35,7 +35,7 @@ import static org.junit.Assert.assertThat;
 public class ForgeTest {
     private Forge forge;
     private MockHttpTransport httpTransport;
-    private Map<String, MockLowLevelHttpResponse> responses = new HashMap<String, MockLowLevelHttpResponse>();
+    private Map<String, MockLowLevelHttpResponse> responses = new HashMap<>();
 
     @Before
     public void setUp() throws Exception {
