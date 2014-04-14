@@ -31,6 +31,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 public class ForgeTest {
@@ -87,7 +88,7 @@ public class ForgeTest {
         responses.put("http://forge.example.com/forge/puppetlabs/apache.json", response);
 
         ModuleRelease latestVersion = forge.getLatestVersion(ModuleSpec.of("puppetlabs/apache"));
-        assertThat(latestVersion.getVersion(), is(Version.of("1.0.10")));
+        assertThat(latestVersion.getVersion(), is("1.0.10"));
     }
 
     @Test
@@ -97,7 +98,17 @@ public class ForgeTest {
         responses.put("http://forge.example.com/forge/puppetlabs/apache.json", response);
 
         ModuleRelease latestVersion = forge.getLatestVersion(ModuleSpec.of("puppetlabs/apache").withVersionLessThan(Version.of("1.0.0")));
-        assertThat(latestVersion.getVersion(), is(Version.of("0.11.0")));
+        assertThat(latestVersion.getVersion(), is("0.11.0"));
+    }
+
+    @Test
+    public void shouldReturnNullIfLatestReleaseIsBeforeLowerBound() throws Exception {
+        String metadata = "{\"releases\":[{\"version\":\"1.0.1\"},{\"version\":\"1.0.10\"},{\"version\":\"0.11.0\"}]}";
+        MockLowLevelHttpResponse response = new MockLowLevelHttpResponse().setStatusCode(200).setContent(metadata);
+        responses.put("http://forge.example.com/forge/puppetlabs/apache.json", response);
+
+        ModuleRelease latestVersion = forge.getLatestVersion(ModuleSpec.of("puppetlabs/apache").withVersionGreaterThanOrEqualTo(Version.of("1.1.0")));
+        assertThat(latestVersion, is(nullValue()));
     }
 
 }

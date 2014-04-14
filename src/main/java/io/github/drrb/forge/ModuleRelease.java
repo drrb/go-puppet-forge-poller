@@ -25,8 +25,8 @@ public class ModuleRelease extends GenericJson implements Comparable<ModuleRelea
     @Key
     private String version;
 
-    public Version getVersion() {
-        return Version.of(version);
+    public String getVersion() {
+        return version;
     }
 
     public static ModuleRelease with(Version version) {
@@ -38,10 +38,5 @@ public class ModuleRelease extends GenericJson implements Comparable<ModuleRelea
     @Override
     public int compareTo(ModuleRelease other) {
         return getVersion().compareTo(other.getVersion());
-    }
-
-    @Override
-    public String toString() {
-        return version;
     }
 }

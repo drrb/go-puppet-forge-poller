@@ -26,14 +26,16 @@ import static io.github.drrb.ForgePollerPluginConfig.MODULE_NAME;
 public class ModuleSpec {
     private final String name;
     private final Version upperVersionBound;
+    private final Version lowerVersionBound;
 
     public ModuleSpec(String name) {
-        this(name, Version.INFINITY);
+        this(name, Version.ZERO, Version.INFINITY);
     }
 
-    public ModuleSpec(String name, Version upperVersionBound) {
+    public ModuleSpec(String name, Version lowerVersionBound, Version upperVersionBound) {
         this.name = name;
         this.upperVersionBound = upperVersionBound;
+        this.lowerVersionBound = lowerVersionBound;
     }
 
     public static ModuleSpec of(String moduleName) {
@@ -45,11 +47,19 @@ public class ModuleSpec {
     }
 
     public ModuleSpec withVersionLessThan(Version upperVersionBound) {
-        return new ModuleSpec(name, upperVersionBound);
+        return new ModuleSpec(name, lowerVersionBound, upperVersionBound);
+    }
+
+    public ModuleSpec withVersionGreaterThanOrEqualTo(Version lowerVersionBound) {
+        return new ModuleSpec(name, lowerVersionBound, upperVersionBound);
     }
 
     public String getName() {
         return name;
+    }
+
+    public Version getLowerVersionBound() {
+        return lowerVersionBound;
     }
 
     public Version getUpperVersionBound() {
@@ -64,11 +74,12 @@ public class ModuleSpec {
 
         ModuleSpec that = (ModuleSpec) other;
         return Objects.equals(this.name, that.name)
+                && Objects.equals(this.lowerVersionBound, that.lowerVersionBound)
                 && Objects.equals(this.upperVersionBound, that.upperVersionBound);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, upperVersionBound);
+        return Objects.hash(name, lowerVersionBound, upperVersionBound);
     }
 }

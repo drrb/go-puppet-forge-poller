@@ -23,9 +23,7 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.LinkedList;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 public class Forge {
     public static class PingFailure extends Exception {
@@ -60,16 +58,26 @@ public class Forge {
     }
 
     public ModuleRelease getLatestVersion(ModuleSpec module) {
+        List<ModuleRelease> releases = getAllVersions(module);
+
+        SortedSet<ModuleRelease> orderedReleases = new TreeSet<>(releases);
+        ModuleRelease upperVersionBound = ModuleRelease.with(module.getUpperVersionBound());
+        ModuleRelease lowerVersionBound = ModuleRelease.with(module.getLowerVersionBound());
+
+        try {
+            return orderedReleases.tailSet(lowerVersionBound).headSet(upperVersionBound).last();
+        } catch (NoSuchElementException e) {
+            return null;
+        }
+    }
+
+    private List<ModuleRelease> getAllVersions(ModuleSpec module) {
         try {
             HttpResponse response = get(moduleUrl(module));
             ModuleMetadata moduleMetadata = response.parseAs(ModuleMetadata.class);
-            LinkedList<ModuleRelease> releases = moduleMetadata.getReleases();
-            SortedSet<ModuleRelease> orderedReleases = new TreeSet<>();
-            orderedReleases.addAll(releases);
-            ModuleRelease upperVersionBound = ModuleRelease.with(module.getUpperVersionBound());
-            //TODO: this will throw NoSuchElementException if set is empty
-            return orderedReleases.headSet(upperVersionBound).last();
+            return moduleMetadata.getReleases();
         } catch (IOException e) {
+            //TODO: just return empty list?
             throw new RuntimeException(e);
         }
     }

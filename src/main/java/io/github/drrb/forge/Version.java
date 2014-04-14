@@ -21,6 +21,7 @@ import java.util.Objects;
 
 public class Version implements Comparable<Version> {
 
+    public static final Version ZERO = new Version(String.valueOf(0));
     public static final Version INFINITY = new Version(String.valueOf(Integer.MAX_VALUE));
     private final String string;
 

@@ -21,14 +21,14 @@ package io.github.drrb.forge;
 import com.google.api.client.json.GenericJson;
 import com.google.api.client.util.Key;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ModuleMetadata extends GenericJson {
     @Key
     private List<ModuleRelease> releases;
 
-    public LinkedList<ModuleRelease> getReleases() {
-        return new LinkedList<ModuleRelease>(releases);
+    public List<ModuleRelease> getReleases() {
+        return new ArrayList<>(releases);
     }
 }
