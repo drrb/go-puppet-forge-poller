@@ -24,8 +24,7 @@ import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfi
 import com.thoughtworks.go.plugin.api.response.Result;
 import io.github.drrb.forge.Forge;
 import io.github.drrb.forge.ModuleRelease;
-
-import static io.github.drrb.ForgePollerPluginConfig.MODULE_NAME;
+import io.github.drrb.forge.ModuleSpec;
 
 public class ForgePoller implements PackageMaterialPoller {
     private final ForgeFactory forgeFactory;
@@ -51,7 +50,7 @@ public class ForgePoller implements PackageMaterialPoller {
         Forge forge = forgeFactory.build(repositoryConfiguration);
         Result result = new Result();
         try {
-            forge.ping(packageConfiguration.get(MODULE_NAME).getValue());
+            forge.ping(ModuleSpec.from(packageConfiguration));
         } catch (Forge.PingFailure pingFailure) {
             result = result.withErrorMessages(pingFailure.getMessage());
         }
@@ -61,14 +60,14 @@ public class ForgePoller implements PackageMaterialPoller {
     @Override
     public PackageRevision getLatestRevision(PackageConfiguration packageConfiguration, RepositoryConfiguration repositoryConfiguration) {
         Forge forge = forgeFactory.build(repositoryConfiguration);
-        ModuleRelease latestRelease = forge.getLatestVersion(packageConfiguration.get(MODULE_NAME).getValue());
-        return new PackageRevision(latestRelease.getVersion(), null, null);
+        ModuleRelease latestRelease = forge.getLatestVersion(ModuleSpec.from(packageConfiguration));
+        return new PackageRevision(latestRelease.getVersion().toString(), null, null);
     }
 
     @Override
     public PackageRevision latestModificationSince(PackageConfiguration packageConfiguration, RepositoryConfiguration repositoryConfiguration, PackageRevision packageRevision) {
         Forge forge = forgeFactory.build(repositoryConfiguration);
-        ModuleRelease latestRelease = forge.getLatestVersion(packageConfiguration.get(MODULE_NAME).getValue());
-        return new PackageRevision(latestRelease.getVersion(), null, null);
+        ModuleRelease latestRelease = forge.getLatestVersion(ModuleSpec.from(packageConfiguration));
+        return new PackageRevision(latestRelease.getVersion().toString(), null, null);
     }
 }

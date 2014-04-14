@@ -23,8 +23,9 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Collections;
 import java.util.LinkedList;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class Forge {
     public static class PingFailure extends Exception {
@@ -54,18 +55,20 @@ public class Forge {
         ping(getUrl());
     }
 
-    //TODO: accept package name instead of Go API class
-    public void ping(String moduleName) throws PingFailure {
-        ping(moduleUrl(moduleName));
+    public void ping(ModuleSpec module) throws PingFailure {
+        ping(moduleUrl(module));
     }
 
-    public ModuleRelease getLatestVersion(String moduleName) {
+    public ModuleRelease getLatestVersion(ModuleSpec module) {
         try {
-            HttpResponse response = get(moduleUrl(moduleName));
+            HttpResponse response = get(moduleUrl(module));
             ModuleMetadata moduleMetadata = response.parseAs(ModuleMetadata.class);
             LinkedList<ModuleRelease> releases = moduleMetadata.getReleases();
-            Collections.sort(releases, ModuleRelease.versionComparator());
-            return releases.getLast();
+            SortedSet<ModuleRelease> orderedReleases = new TreeSet<>();
+            orderedReleases.addAll(releases);
+            ModuleRelease upperVersionBound = ModuleRelease.with(module.getUpperVersionBound());
+            //TODO: this will throw NoSuchElementException if set is empty
+            return orderedReleases.headSet(upperVersionBound).last();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -74,17 +77,15 @@ public class Forge {
     private void ping(URI url) throws PingFailure {
         try {
             get(url);
-        } catch (HttpResponseException e) {
+        } catch (IOException e) {
             //TODO: Improve this message
             throw new PingFailure("Failed to connect to Forge", e);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
-    private URI moduleUrl(String moduleName) {
+    private URI moduleUrl(ModuleSpec moduleSpec) {
         //TODO: this will fail
-        String url = getUrl() + "/" + moduleName + ".json";
+        String url = getUrl() + "/" + moduleSpec.getName() + ".json";
         return URI.create(url);
     }
 

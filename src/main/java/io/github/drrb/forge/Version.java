@@ -15,17 +15,27 @@
  * You should have received a copy of the GNU General Public License
  * along with Go Forge Poller. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.github.drrb.util;
+package io.github.drrb.forge;
 
-import java.util.Comparator;
+import java.util.Objects;
 
-public class VersionComparator implements Comparator<String> {
+public class Version implements Comparable<Version> {
+
+    public static final Version INFINITY = new Version(String.valueOf(Integer.MAX_VALUE));
+    private final String string;
+
+    private Version(String string) {
+        this.string = string;
+    }
+
+    public static Version of(String version) {
+        return new Version(version);
+    }
 
     @Override
-    public int compare(String versionA, String versionB) {
-        System.out.println("Comparing " + versionA + " <> " + versionB);
-        String[] versionAParts = versionA.split("\\.");
-        String[] versionBParts = versionB.split("\\.");
+    public int compareTo(Version that) {
+        String[] versionAParts = this.string.split("\\.");
+        String[] versionBParts = that.string.split("\\.");
         for (int i = 0; i < versionAParts.length && i < versionBParts.length; i++) {
             Integer versionAPart = Integer.parseInt(versionAParts[i]);
             Integer versionBPart = Integer.parseInt(versionBParts[i]);
@@ -40,5 +50,25 @@ public class VersionComparator implements Comparator<String> {
         } else {
             return 0;
         }
+    }
+
+    @Override
+    public String toString() {
+        return string;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == null) return false;
+        if (other == this) return true;
+        if (other.getClass() != getClass()) return false;
+
+        Version that = (Version) other;
+        return Objects.equals(this.string, that.string);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(string);
     }
 }

@@ -20,30 +20,28 @@ package io.github.drrb.forge;
 
 import com.google.api.client.json.GenericJson;
 import com.google.api.client.util.Key;
-import io.github.drrb.util.VersionComparator;
 
-import java.util.Comparator;
-
-public class ModuleRelease extends GenericJson {
+public class ModuleRelease extends GenericJson implements Comparable<ModuleRelease> {
     @Key
     private String version;
 
-    public String getVersion() {
+    public Version getVersion() {
+        return Version.of(version);
+    }
+
+    public static ModuleRelease with(Version version) {
+        ModuleRelease moduleRelease = new ModuleRelease();
+        moduleRelease.version = version.toString();
+        return moduleRelease;
+    }
+
+    @Override
+    public int compareTo(ModuleRelease other) {
+        return getVersion().compareTo(other.getVersion());
+    }
+
+    @Override
+    public String toString() {
         return version;
-    }
-
-    public ModuleRelease withVersion(String version) {
-        this.version = version;
-        return this;
-    }
-
-    public static Comparator<ModuleRelease> versionComparator() {
-        return new Comparator<ModuleRelease>() {
-            @Override
-            public int compare(ModuleRelease releaseA, ModuleRelease releaseB) {
-                VersionComparator versionComparator = new VersionComparator();
-                return versionComparator.compare(releaseA.version, releaseB.version);
-            }
-        };
     }
 }

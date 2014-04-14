@@ -24,6 +24,8 @@ import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfi
 import com.thoughtworks.go.plugin.api.response.Result;
 import io.github.drrb.forge.Forge;
 import io.github.drrb.forge.ModuleRelease;
+import io.github.drrb.forge.ModuleSpec;
+import io.github.drrb.forge.Version;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,7 +61,7 @@ public class ForgePollerTest {
         repoConfig = new RepositoryConfiguration();
         packageConfig = new PackageConfiguration();
         packageConfig.add(new Property(MODULE_NAME, "puppetlabs/apache"));
-        moduleRelease = new ModuleRelease().withVersion("1.0.0");
+        moduleRelease = ModuleRelease.with(Version.of("1.0.0"));
 
         when(forgeFactory.build(repoConfig)).thenReturn(forge);
     }
@@ -90,7 +92,7 @@ public class ForgePollerTest {
 
     @Test
     public void shouldReturnFailureWhenPackageConnectionFails() throws Exception {
-        doThrow(new PingFailure("Not found")).when(forge).ping("puppetlabs/apache");
+        doThrow(new PingFailure("Not found")).when(forge).ping(ModuleSpec.of("puppetlabs/apache"));
 
         Result result = poller.checkConnectionToPackage(packageConfig, repoConfig);
 
@@ -100,7 +102,7 @@ public class ForgePollerTest {
 
     @Test
     public void shouldReturnLatestVersionOfPackage() throws Exception {
-        when(forge.getLatestVersion("puppetlabs/apache")).thenReturn(moduleRelease);
+        when(forge.getLatestVersion(ModuleSpec.of("puppetlabs/apache"))).thenReturn(moduleRelease);
 
         PackageRevision result = poller.getLatestRevision(packageConfig, repoConfig);
 
@@ -109,7 +111,7 @@ public class ForgePollerTest {
 
     @Test
     public void shouldReturnLatestVersionOfPackageWhenReturningLatestModification() throws Exception {
-        when(forge.getLatestVersion("puppetlabs/apache")).thenReturn(moduleRelease);
+        when(forge.getLatestVersion(ModuleSpec.of("puppetlabs/apache"))).thenReturn(moduleRelease);
 
         PackageRevision result = poller.latestModificationSince(packageConfig, repoConfig, mock(PackageRevision.class));
 
