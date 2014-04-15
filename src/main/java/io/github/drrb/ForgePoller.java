@@ -36,25 +36,25 @@ public class ForgePoller implements PackageMaterialPoller {
     @Override
     public Result checkConnectionToRepository(RepositoryConfiguration repositoryConfiguration) {
         Forge forge = forgeFactory.build(repositoryConfiguration);
-        Result result = new Result();
         try {
             forge.ping();
+            return new Result().withSuccessMessages("Connection successful");
         } catch (Forge.PingFailure pingFailure) {
-            result = result.withErrorMessages(pingFailure.getMessage());
+            return new Result().withErrorMessages(pingFailure.getMessage());
         }
-        return result;
     }
 
     @Override
     public Result checkConnectionToPackage(PackageConfiguration packageConfiguration, RepositoryConfiguration repositoryConfiguration) {
+        ModuleSpec moduleSpec = ModuleSpec.from(packageConfiguration);
         Forge forge = forgeFactory.build(repositoryConfiguration);
-        Result result = new Result();
+
         try {
-            forge.ping(ModuleSpec.from(packageConfiguration));
+            forge.ping(moduleSpec);
+            return new Result().withSuccessMessages("Found " + moduleSpec.getName());
         } catch (Forge.PingFailure pingFailure) {
-            result = result.withErrorMessages(pingFailure.getMessage());
+            return new Result().withErrorMessages(pingFailure.getMessage());
         }
-        return result;
     }
 
     @Override
