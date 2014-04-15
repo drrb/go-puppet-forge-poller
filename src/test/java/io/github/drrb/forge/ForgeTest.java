@@ -32,7 +32,6 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
 public class ForgeTest {
     private Forge forge;
@@ -101,28 +100,20 @@ public class ForgeTest {
         assertThat(latestVersion.getVersion(), is("0.11.0"));
     }
 
-    @Test
+    @Test(expected = Forge.ModuleNotFound.class)
     public void shouldRaiseExceptionIfLatestReleaseIsBeforeLowerBound() throws Exception {
         String metadata = "{\"releases\":[{\"version\":\"1.0.1\"},{\"version\":\"1.0.10\"},{\"version\":\"0.11.0\"}]}";
         MockLowLevelHttpResponse response = new MockLowLevelHttpResponse().setStatusCode(200).setContent(metadata);
         responses.put("http://forge.example.com/forge/puppetlabs/apache.json", response);
 
-        try {
-            forge.getLatestVersion(ModuleSpec.of("puppetlabs/apache").withVersionGreaterThanOrEqualTo(Version.of("1.1.0")));
-            fail("Expected an exception to be thrown");
-        } catch (Forge.ModuleNotFound e) {
-        }
+        forge.getLatestVersion(ModuleSpec.of("puppetlabs/apache").withVersionGreaterThanOrEqualTo(Version.of("1.1.0")));
     }
 
-    @Test
+    @Test(expected = Forge.ModuleNotFound.class)
     public void shouldRaiseExceptionIfModuleNotFound() throws Exception {
         MockLowLevelHttpResponse response = new MockLowLevelHttpResponse().setStatusCode(404);
         responses.put("http://forge.example.com/forge/puppetlabs/apache.json", response);
 
-        try {
-            forge.getLatestVersion(ModuleSpec.of("puppetlabs/apache"));
-            fail("Expected an exception to be thrown");
-        } catch (Forge.ModuleNotFound e) {
-        }
+        forge.getLatestVersion(ModuleSpec.of("puppetlabs/apache"));
     }
 }
