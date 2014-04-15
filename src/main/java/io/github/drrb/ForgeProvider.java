@@ -21,7 +21,6 @@ import com.thoughtworks.go.plugin.api.annotation.Extension;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageMaterialConfiguration;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageMaterialPoller;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageMaterialProvider;
-import io.github.drrb.forge.Forge;
 
 @Extension
 public class ForgeProvider implements PackageMaterialProvider {
