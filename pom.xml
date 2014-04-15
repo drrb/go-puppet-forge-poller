@@ -107,6 +107,7 @@
                         <copyright.owner>drrb</copyright.owner>
                     </properties>
                     <excludes>
+                        <exclude>TODO.yml</exclude>
                         <exclude>LICENSE.txt</exclude>
                         <exclude>README.md</exclude>
                         <exclude>.gitignore</exclude>

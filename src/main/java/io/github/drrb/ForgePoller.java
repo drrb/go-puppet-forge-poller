@@ -60,14 +60,18 @@ public class ForgePoller implements PackageMaterialPoller {
     @Override
     public PackageRevision getLatestRevision(PackageConfiguration packageConfiguration, RepositoryConfiguration repositoryConfiguration) {
         Forge forge = forgeFactory.build(repositoryConfiguration);
-        ModuleRelease latestRelease = forge.getLatestVersion(ModuleSpec.from(packageConfiguration));
-        return new PackageRevision(latestRelease.getVersion().toString(), null, null);
+        try {
+            ModuleRelease latestRelease = forge.getLatestVersion(ModuleSpec.from(packageConfiguration));
+            //TODO: fill these in properly
+            return new PackageRevision(latestRelease.getVersion(), null, null);
+        } catch (Forge.ModuleNotFound moduleNotFound) {
+            return null;
+        }
     }
 
     @Override
     public PackageRevision latestModificationSince(PackageConfiguration packageConfiguration, RepositoryConfiguration repositoryConfiguration, PackageRevision packageRevision) {
-        Forge forge = forgeFactory.build(repositoryConfiguration);
-        ModuleRelease latestRelease = forge.getLatestVersion(ModuleSpec.from(packageConfiguration));
-        return new PackageRevision(latestRelease.getVersion().toString(), null, null);
+        //Not sure what this method is supposed to do, so returning latest revision
+        return getLatestRevision(packageConfiguration, repositoryConfiguration);
     }
 }

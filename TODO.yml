@@ -1,0 +1,3 @@
+- Add logging
+- Fix URL constructing
+- Populate PackageRevision info properly

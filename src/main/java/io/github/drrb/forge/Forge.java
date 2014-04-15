@@ -37,6 +37,16 @@ public class Forge {
         }
     }
 
+    public static class ModuleNotFound extends Exception {
+        public ModuleNotFound(String message) {
+            super(message);
+        }
+
+        public ModuleNotFound(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+
     private final String forgeUrl;
     private final HttpTransport httpTransport;
 
@@ -50,14 +60,22 @@ public class Forge {
     }
 
     public void ping() throws PingFailure {
-        ping(getUrl());
+        try {
+            ping(getUrl());
+        } catch (PingFailure e) {
+            throw new PingFailure(String.format("Failed to connect to forge at %s", getUrl()), e);
+        }
     }
 
     public void ping(ModuleSpec module) throws PingFailure {
-        ping(moduleUrl(module));
+        try {
+            ping(moduleUrl(module));
+        } catch (PingFailure e) {
+            throw new PingFailure(String.format("Failed to query for module %s", module.getName()), e);
+        }
     }
 
-    public ModuleRelease getLatestVersion(ModuleSpec module) {
+    public ModuleRelease getLatestVersion(ModuleSpec module) throws ModuleNotFound {
         List<ModuleRelease> releases = getAllVersions(module);
 
         SortedSet<ModuleRelease> orderedReleases = new TreeSet<>(releases);
@@ -67,18 +85,17 @@ public class Forge {
         try {
             return orderedReleases.tailSet(lowerVersionBound).headSet(upperVersionBound).last();
         } catch (NoSuchElementException e) {
-            return null;
+            throw new ModuleNotFound(String.format("No module versions found satisfying '%s'", module), e);
         }
     }
 
-    private List<ModuleRelease> getAllVersions(ModuleSpec module) {
+    private List<ModuleRelease> getAllVersions(ModuleSpec module) throws ModuleNotFound {
         try {
             HttpResponse response = get(moduleUrl(module));
             ModuleMetadata moduleMetadata = response.parseAs(ModuleMetadata.class);
             return moduleMetadata.getReleases();
         } catch (IOException e) {
-            //TODO: just return empty list?
-            throw new RuntimeException(e);
+            throw new ModuleNotFound(String.format("Failed to list versions of module '%s'", module), e);
         }
     }
 
@@ -86,8 +103,7 @@ public class Forge {
         try {
             get(url);
         } catch (IOException e) {
-            //TODO: Improve this message
-            throw new PingFailure("Failed to connect to Forge", e);
+            throw new PingFailure(String.format("Failed to connect to '%s'", url), e);
         }
     }
 

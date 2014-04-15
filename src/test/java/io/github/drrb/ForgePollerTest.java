@@ -36,6 +36,7 @@ import static io.github.drrb.ForgePollerPluginConfig.MODULE_NAME;
 import static io.github.drrb.forge.Forge.PingFailure;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.doThrow;
@@ -107,6 +108,15 @@ public class ForgePollerTest {
         PackageRevision result = poller.getLatestRevision(packageConfig, repoConfig);
 
         assertThat(result.getRevision(), is("1.0.0"));
+    }
+
+    @Test
+    public void shouldReturnNullWhenPackageNotFound() throws Exception {
+        when(forge.getLatestVersion(ModuleSpec.of("puppetlabs/apache"))).thenThrow(new Forge.ModuleNotFound("puppetlabs/apache"));
+
+        PackageRevision result = poller.getLatestRevision(packageConfig, repoConfig);
+
+        assertThat(result, is(nullValue()));
     }
 
     @Test

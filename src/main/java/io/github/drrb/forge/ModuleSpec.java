@@ -82,4 +82,14 @@ public class ModuleSpec {
     public int hashCode() {
         return Objects.hash(name, lowerVersionBound, upperVersionBound);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder string = new StringBuilder(name);
+        string.append(": >= ").append(lowerVersionBound);
+        if (upperVersionBound != Version.INFINITY) {
+            string.append(", < ").append(upperVersionBound);
+        }
+        return string.toString();
+    }
 }
