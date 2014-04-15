@@ -17,6 +17,8 @@
  */
 package io.github.drrb.forge;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Version implements Comparable<Version> {
@@ -24,32 +26,62 @@ public class Version implements Comparable<Version> {
     public static final Version ZERO = new Version(String.valueOf(0));
     public static final Version INFINITY = new Version(String.valueOf(Integer.MAX_VALUE));
     private final String string;
+    private final List<Object> components;
 
     private Version(String string) {
-        this.string = string;
+        if (!string.matches("\\A\\d+([.-][a-zA-Z0-9]+)*\\Z")) {
+            throw new IllegalArgumentException("Expected a version number matching /\\A\\d+([.-][a-zA-Z0-9]+)*\\Z/, but got \"" + string + "\"");
+        }
+        this.string = string.replaceAll("-", ".pre.");
+        this.components = parse(string);
     }
 
     public static Version of(String version) {
         return new Version(version);
     }
 
-    @Override
-    public int compareTo(Version that) {
-        String[] versionAParts = this.string.split("\\.");
-        String[] versionBParts = that.string.split("\\.");
-        for (int i = 0; i < versionAParts.length && i < versionBParts.length; i++) {
-            Integer versionAPart = Integer.parseInt(versionAParts[i]);
-            Integer versionBPart = Integer.parseInt(versionBParts[i]);
-            if (!versionAPart.equals(versionBPart)) {
-                return versionAPart.compareTo(versionBPart);
+    private static List<Object> parse(String string) {
+        String[] parts = string.split("\\.");
+        List<Object> components = new ArrayList<>(parts.length);
+        for (String part : parts) {
+            if (part.matches("\\d+")) {
+                components.add(Integer.valueOf(part));
+            } else {
+                components.add(part);
             }
         }
-        if (versionAParts.length < versionBParts.length) {
+        return components;
+    }
+
+    @Override
+    public int compareTo(Version that) {
+        List<Object> versionAParts = this.components;
+        List<Object> versionBParts = that.components;
+        for (int i = 0; i < versionAParts.size() && i < versionBParts.size(); i++) {
+            Object versionAPart = versionAParts.get(i);
+            Object versionBPart = versionBParts.get(i);
+            if (!versionAPart.equals(versionBPart)) {
+                return compareParts(versionAPart, versionBPart);
+            }
+        }
+        if (versionAParts.size() < versionBParts.size()) {
             return -1;
-        } else if (versionAParts.length > versionBParts.length) {
+        } else if (versionAParts.size() > versionBParts.size()) {
             return 1;
         } else {
             return 0;
+        }
+    }
+
+    private int compareParts(Object versionAPart, Object versionBPart) {
+        if (versionAPart instanceof String && versionBPart instanceof Integer) {
+            return -1;
+        } else if (versionAPart instanceof Integer && versionBPart instanceof String) {
+            return 1;
+        } else if (versionAPart instanceof Integer) {
+            return ((Integer) versionAPart).compareTo((Integer) versionBPart);
+        } else {
+            return ((String) versionAPart).compareTo((String) versionBPart);
         }
     }
 
