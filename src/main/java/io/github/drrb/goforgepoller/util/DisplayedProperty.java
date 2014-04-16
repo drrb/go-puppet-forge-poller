@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Go Forge Poller. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.github.drrb.api;
+package io.github.drrb.goforgepoller.util;
 
 import com.thoughtworks.go.plugin.api.material.packagerepository.Property;
 

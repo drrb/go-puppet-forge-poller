@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Go Forge Poller. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.github.drrb;
+package io.github.drrb.goforgepoller;
 
 import com.thoughtworks.go.plugin.api.logging.Logger;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration;
@@ -23,10 +23,10 @@ import com.thoughtworks.go.plugin.api.material.packagerepository.PackageMaterial
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
 import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
 import com.thoughtworks.go.plugin.api.response.Result;
-import io.github.drrb.forge.Forge;
-import io.github.drrb.forge.ModuleRelease;
-import io.github.drrb.forge.ModuleSpec;
-import io.github.drrb.util.Exceptions;
+import io.github.drrb.goforgepoller.forge.Forge;
+import io.github.drrb.goforgepoller.forge.ModuleRelease;
+import io.github.drrb.goforgepoller.forge.ModuleSpec;
+import io.github.drrb.goforgepoller.util.Exceptions;
 
 public class ForgePoller implements PackageMaterialPoller {
 

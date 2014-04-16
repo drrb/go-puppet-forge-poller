@@ -15,13 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with Go Forge Poller. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.github.drrb.forge;
+package io.github.drrb.goforgepoller.forge;
 
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration;
 
 import java.util.Objects;
 
-import static io.github.drrb.ForgePollerPluginConfig.MODULE_NAME;
+import static io.github.drrb.goforgepoller.ForgePollerPluginConfig.MODULE_NAME;
 
 public class ModuleSpec {
     private final String name;

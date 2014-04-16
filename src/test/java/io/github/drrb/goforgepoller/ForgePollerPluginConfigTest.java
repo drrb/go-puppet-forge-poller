@@ -15,22 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with Go Forge Poller. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.github.drrb;
+package io.github.drrb.goforgepoller;
 
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration;
 import com.thoughtworks.go.plugin.api.material.packagerepository.Property;
 import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
-
-import static com.thoughtworks.go.plugin.api.material.packagerepository.Property.*;
-import static io.github.drrb.ForgePollerPluginConfig.*;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import com.thoughtworks.go.plugin.api.response.validation.ValidationResult;
 import org.junit.Before;
 import org.junit.Test;
+
+import static com.thoughtworks.go.plugin.api.material.packagerepository.Property.DISPLAY_NAME;
+import static io.github.drrb.goforgepoller.ForgePollerPluginConfig.FORGE_URL;
+import static io.github.drrb.goforgepoller.ForgePollerPluginConfig.MODULE_NAME;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ForgePollerPluginConfigTest {
 

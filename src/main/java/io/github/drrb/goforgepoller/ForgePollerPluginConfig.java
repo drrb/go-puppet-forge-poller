@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Go Forge Poller. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.github.drrb;
+package io.github.drrb.goforgepoller;
 
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageMaterialConfiguration;
@@ -23,7 +23,7 @@ import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfi
 import com.thoughtworks.go.plugin.api.response.validation.ValidationError;
 import com.thoughtworks.go.plugin.api.response.validation.ValidationResult;
 
-import static io.github.drrb.api.DisplayedProperty.property;
+import static io.github.drrb.goforgepoller.util.DisplayedProperty.property;
 
 public class ForgePollerPluginConfig implements PackageMaterialConfiguration {
     public static final String FORGE_URL = "FORGE_URL";

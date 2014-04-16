@@ -15,14 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with Go Forge Poller. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.github.drrb.forge;
+package io.github.drrb.goforgepoller.forge;
 
 import com.google.api.client.http.*;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
-import io.github.drrb.ForgePollerPluginConfig;
+import io.github.drrb.goforgepoller.ForgePollerPluginConfig;
 
 import java.io.IOException;
 import java.net.URI;

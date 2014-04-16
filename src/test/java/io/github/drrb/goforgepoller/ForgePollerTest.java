@@ -15,25 +15,25 @@
  * You should have received a copy of the GNU General Public License
  * along with Go Forge Poller. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.github.drrb;
+package io.github.drrb.goforgepoller;
 
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
 import com.thoughtworks.go.plugin.api.material.packagerepository.Property;
 import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
 import com.thoughtworks.go.plugin.api.response.Result;
-import io.github.drrb.forge.Forge;
-import io.github.drrb.forge.ModuleRelease;
-import io.github.drrb.forge.ModuleSpec;
-import io.github.drrb.forge.Version;
+import io.github.drrb.goforgepoller.forge.Forge;
+import io.github.drrb.goforgepoller.forge.ModuleRelease;
+import io.github.drrb.goforgepoller.forge.ModuleSpec;
+import io.github.drrb.goforgepoller.forge.Version;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static io.github.drrb.ForgePollerPluginConfig.MODULE_NAME;
-import static io.github.drrb.forge.Forge.PingFailure;
+import static io.github.drrb.goforgepoller.ForgePollerPluginConfig.MODULE_NAME;
+import static io.github.drrb.goforgepoller.forge.Forge.PingFailure;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;

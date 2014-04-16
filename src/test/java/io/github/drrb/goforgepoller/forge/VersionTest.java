@@ -15,15 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with Go Forge Poller. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.github.drrb.forge;
+package io.github.drrb.goforgepoller.forge;
 
 import org.junit.Test;
 
 import static io.github.drrb.test.Matchers.greaterThan;
 import static io.github.drrb.test.Matchers.lessThan;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
