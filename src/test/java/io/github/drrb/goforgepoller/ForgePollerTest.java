@@ -19,7 +19,6 @@ package io.github.drrb.goforgepoller;
 
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
-import com.thoughtworks.go.plugin.api.material.packagerepository.Property;
 import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
 import com.thoughtworks.go.plugin.api.response.Result;
 import io.github.drrb.goforgepoller.forge.Forge;
@@ -32,7 +31,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static io.github.drrb.goforgepoller.ForgePollerPluginConfig.MODULE_NAME;
 import static io.github.drrb.goforgepoller.forge.Forge.PingFailure;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.core.Is.is;
@@ -41,11 +39,17 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ForgePollerTest {
+
     private ForgePoller poller;
+
+    @Mock
+    private Forge.Factory forgeFactory;
     @Mock
     private Forge forge;
     @Mock
-    private Forge.Factory forgeFactory;
+    private ModuleSpec.Factory moduleSpecFactory;
+    @Mock
+    private ModuleSpec moduleSpec;
 
     private RepositoryConfiguration repoConfig;
     private PackageConfiguration packageConfig;
@@ -53,14 +57,14 @@ public class ForgePollerTest {
 
     @Before
     public void setUp() throws Exception {
-        poller = new ForgePoller(forgeFactory);
+        poller = new ForgePoller(forgeFactory, moduleSpecFactory);
 
         repoConfig = new RepositoryConfiguration();
         packageConfig = new PackageConfiguration();
-        packageConfig.add(new Property(MODULE_NAME, "puppetlabs/apache"));
         moduleRelease = ModuleRelease.with(Version.of("1.0.0"));
 
         when(forgeFactory.build(repoConfig)).thenReturn(forge);
+        when(moduleSpecFactory.build(packageConfig)).thenReturn(moduleSpec);
     }
 
     @Test
@@ -89,7 +93,7 @@ public class ForgePollerTest {
 
     @Test
     public void shouldReturnFailureWhenPackageConnectionFails() throws Exception {
-        doThrow(new PingFailure("Not found")).when(forge).ping(ModuleSpec.of("puppetlabs/apache"));
+        doThrow(new PingFailure("Not found")).when(forge).ping(moduleSpec);
 
         Result result = poller.checkConnectionToPackage(packageConfig, repoConfig);
 
@@ -99,7 +103,7 @@ public class ForgePollerTest {
 
     @Test
     public void shouldReturnLatestVersionOfPackage() throws Exception {
-        when(forge.getLatestVersion(ModuleSpec.of("puppetlabs/apache"))).thenReturn(moduleRelease);
+        when(forge.getLatestVersion(moduleSpec)).thenReturn(moduleRelease);
 
         PackageRevision result = poller.getLatestRevision(packageConfig, repoConfig);
 
@@ -108,7 +112,7 @@ public class ForgePollerTest {
 
     @Test
     public void shouldReturnNullWhenPackageNotFound() throws Exception {
-        when(forge.getLatestVersion(ModuleSpec.of("puppetlabs/apache"))).thenThrow(new Forge.ModuleNotFound("Failed to list versions of module 'puppetlabs/apache' (500)"));
+        when(forge.getLatestVersion(moduleSpec)).thenThrow(new Forge.ModuleNotFound("Failed to list versions of module 'puppetlabs/apache' (500)"));
 
         PackageRevision result = poller.getLatestRevision(packageConfig, repoConfig);
 
@@ -117,11 +121,10 @@ public class ForgePollerTest {
 
     @Test
     public void shouldReturnLatestVersionOfPackageWhenReturningLatestModification() throws Exception {
-        when(forge.getLatestVersion(ModuleSpec.of("puppetlabs/apache"))).thenReturn(moduleRelease);
+        when(forge.getLatestVersion(moduleSpec)).thenReturn(moduleRelease);
 
         PackageRevision result = poller.latestModificationSince(packageConfig, repoConfig, mock(PackageRevision.class));
 
         assertThat(result.getRevision(), is("1.0.0"));
     }
-
 }

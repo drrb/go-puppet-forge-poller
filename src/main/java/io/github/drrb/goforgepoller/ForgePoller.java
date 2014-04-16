@@ -32,9 +32,11 @@ public class ForgePoller implements PackageMaterialPoller {
 
     private static final Logger LOGGER = Logger.getLoggerFor(ForgePoller.class);
     private final Forge.Factory forgeFactory;
+    private final ModuleSpec.Factory moduleSpecFactory;
 
-    public ForgePoller(Forge.Factory forgeFactory) {
+    public ForgePoller(Forge.Factory forgeFactory, ModuleSpec.Factory moduleSpecFactory) {
         this.forgeFactory = forgeFactory;
+        this.moduleSpecFactory = moduleSpecFactory;
     }
 
     @Override
@@ -50,7 +52,7 @@ public class ForgePoller implements PackageMaterialPoller {
 
     @Override
     public Result checkConnectionToPackage(PackageConfiguration packageConfiguration, RepositoryConfiguration repositoryConfiguration) {
-        ModuleSpec moduleSpec = ModuleSpec.from(packageConfiguration);
+        ModuleSpec moduleSpec = moduleSpecFactory.build(packageConfiguration);
         Forge forge = forgeFactory.build(repositoryConfiguration);
 
         try {
@@ -63,7 +65,7 @@ public class ForgePoller implements PackageMaterialPoller {
 
     @Override
     public PackageRevision getLatestRevision(PackageConfiguration packageConfiguration, RepositoryConfiguration repositoryConfiguration) {
-        ModuleSpec module = ModuleSpec.from(packageConfiguration);
+        ModuleSpec module = moduleSpecFactory.build(packageConfiguration);
         Forge forge = forgeFactory.build(repositoryConfiguration);
         log("Looking up latest revision of module %s in forge %s", module, forge);
 
@@ -78,7 +80,7 @@ public class ForgePoller implements PackageMaterialPoller {
 
     @Override
     public PackageRevision latestModificationSince(PackageConfiguration packageConfiguration, RepositoryConfiguration repositoryConfiguration, PackageRevision lastKnownRevision) {
-        ModuleSpec module = ModuleSpec.from(packageConfiguration);
+        ModuleSpec module = moduleSpecFactory.build(packageConfiguration);
         Forge forge = forgeFactory.build(repositoryConfiguration);
         log("Looking up latest revision of module %s in forge %s since version %s", module, forge, lastKnownRevision.getRevision());
 

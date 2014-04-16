@@ -29,8 +29,8 @@ public class ForgePollerPluginConfig implements PackageMaterialConfiguration {
     public static final String FORGE_URL = "FORGE_URL";
 
     public static final String MODULE_NAME = "MODULE_NAME";
-    public static final String POLL_VERSION_FROM = "POLL_VERSION_FROM";
-    public static final String POLL_VERSION_TO = "POLL_VERSION_TO";
+    public static final String LOWER_VERSION_BOUND_INCLUSIVE = "LOWER_VERSION_BOUND_INCLUSIVE";
+    public static final String UPPER_VERSION_BOUND_EXCLUSIVE = "UPPER_VERSION_BOUND_EXCLUSIVE";
 
     public RepositoryConfiguration getRepositoryConfiguration() {
         RepositoryConfiguration repoConfig = new RepositoryConfiguration();
@@ -44,13 +44,13 @@ public class ForgePollerPluginConfig implements PackageMaterialConfiguration {
                 .withDisplayName("Module Name")
                 .withDisplayOrder(0)
                 .build());
-        packageConfig.add(property(POLL_VERSION_FROM)
+        packageConfig.add(property(LOWER_VERSION_BOUND_INCLUSIVE)
                 .withRequired(false)
                 .withDisplayName("Version to poll >=")
                 .withDisplayOrder(1)
                 .withPartOfIdentity(true)
                 .build());
-        packageConfig.add(property(POLL_VERSION_TO)
+        packageConfig.add(property(UPPER_VERSION_BOUND_EXCLUSIVE)
                 .withRequired(false)
                 .withDisplayName("Version to poll <")
                 .withDisplayOrder(2)

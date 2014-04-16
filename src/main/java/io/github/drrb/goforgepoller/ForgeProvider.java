@@ -22,6 +22,7 @@ import com.thoughtworks.go.plugin.api.material.packagerepository.PackageMaterial
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageMaterialPoller;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageMaterialProvider;
 import io.github.drrb.goforgepoller.forge.Forge;
+import io.github.drrb.goforgepoller.forge.ModuleSpec;
 
 @Extension
 public class ForgeProvider implements PackageMaterialProvider {
@@ -31,6 +32,6 @@ public class ForgeProvider implements PackageMaterialProvider {
     }
 
     public PackageMaterialPoller getPoller() {
-        return new ForgePoller(new Forge.Factory());
+        return new ForgePoller(new Forge.Factory(), new ModuleSpec.Factory());
     }
 }

@@ -21,9 +21,21 @@ import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfigur
 
 import java.util.Objects;
 
-import static io.github.drrb.goforgepoller.ForgePollerPluginConfig.MODULE_NAME;
+import static io.github.drrb.goforgepoller.ForgePollerPluginConfig.*;
 
 public class ModuleSpec {
+
+    public static class Factory {
+        public ModuleSpec build(PackageConfiguration packageConfig) {
+            String moduleName = packageConfig.get(MODULE_NAME).getValue();
+            String lowerVersionBoundNumber = packageConfig.get(LOWER_VERSION_BOUND_INCLUSIVE).getValue();
+            String upperVersionBoundNumber = packageConfig.get(UPPER_VERSION_BOUND_EXCLUSIVE).getValue();
+            return of(moduleName)
+                    .withVersionGreaterThanOrEqualTo(Version.of(lowerVersionBoundNumber))
+                    .withVersionLessThan(Version.of(upperVersionBoundNumber));
+        }
+    }
+
     private final String name;
     private final Version upperVersionBound;
     private final Version lowerVersionBound;
@@ -40,10 +52,6 @@ public class ModuleSpec {
 
     public static ModuleSpec of(String moduleName) {
         return new ModuleSpec(moduleName);
-    }
-
-    public static ModuleSpec from(PackageConfiguration packageConfig) {
-        return of(packageConfig.get(MODULE_NAME).getValue());
     }
 
     public ModuleSpec withVersionLessThan(Version upperVersionBound) {
