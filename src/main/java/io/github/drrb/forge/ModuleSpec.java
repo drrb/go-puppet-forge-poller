@@ -86,7 +86,7 @@ public class ModuleSpec {
     @Override
     public String toString() {
         StringBuilder string = new StringBuilder(name);
-        string.append(": >= ").append(lowerVersionBound);
+        string.append(" >= ").append(lowerVersionBound);
         if (upperVersionBound != Version.INFINITY) {
             string.append(", < ").append(upperVersionBound);
         }

@@ -28,15 +28,12 @@ import io.github.drrb.forge.ModuleRelease;
 import io.github.drrb.forge.ModuleSpec;
 import io.github.drrb.util.Exceptions;
 
-import static io.github.drrb.ForgePollerPluginConfig.FORGE_URL;
-import static io.github.drrb.ForgePollerPluginConfig.MODULE_NAME;
-
 public class ForgePoller implements PackageMaterialPoller {
 
     private static final Logger LOGGER = Logger.getLoggerFor(ForgePoller.class);
-    private final ForgeFactory forgeFactory;
+    private final Forge.Factory forgeFactory;
 
-    public ForgePoller(ForgeFactory forgeFactory) {
+    public ForgePoller(Forge.Factory forgeFactory) {
         this.forgeFactory = forgeFactory;
     }
 
@@ -66,27 +63,41 @@ public class ForgePoller implements PackageMaterialPoller {
 
     @Override
     public PackageRevision getLatestRevision(PackageConfiguration packageConfiguration, RepositoryConfiguration repositoryConfiguration) {
-        log("getLatestRevision called with module %s, for forge %s", packageConfiguration.get(MODULE_NAME).getValue(), repositoryConfiguration.get(FORGE_URL).getValue());
+        ModuleSpec module = ModuleSpec.from(packageConfiguration);
         Forge forge = forgeFactory.build(repositoryConfiguration);
+        log("Looking up latest revision of module %s in forge %s", module, forge);
+
         try {
-            ModuleRelease latestRelease = forge.getLatestVersion(ModuleSpec.from(packageConfiguration));
-            //TODO: fill these in properly
-            //return new PackageRevision(latestRelease.getVersion(), null, latestRelease.getAuthor(), "Version " + latestRelease.getVersion() + " released", latestRelease.getUrl());
-            return new PackageRevision(latestRelease.getVersion(), null, null);
+            ModuleRelease latestRelease = forge.getLatestVersion(module);
+            return latestRelease.toPackageRevision();
         } catch (Forge.ModuleNotFound moduleNotFound) {
-            log(Exceptions.render(moduleNotFound));
+            log("Module %s not found in forge %s: %s", module, forge, Exceptions.render(moduleNotFound));
             return null;
         }
     }
 
     @Override
-    public PackageRevision latestModificationSince(PackageConfiguration packageConfiguration, RepositoryConfiguration repositoryConfiguration, PackageRevision packageRevision) {
-        log("latestModificationSince %s called with module %s, for forge %s", packageRevision.getRevision(), packageConfiguration.get(MODULE_NAME).getValue(), repositoryConfiguration.get(FORGE_URL).getValue());
-        //TODO: inline this and warn if latest version is earlier than previous known one (like the Maven repo poller does)
-        return getLatestRevision(packageConfiguration, repositoryConfiguration);
+    public PackageRevision latestModificationSince(PackageConfiguration packageConfiguration, RepositoryConfiguration repositoryConfiguration, PackageRevision lastKnownRevision) {
+        ModuleSpec module = ModuleSpec.from(packageConfiguration);
+        Forge forge = forgeFactory.build(repositoryConfiguration);
+        log("Looking up latest revision of module %s in forge %s since version %s", module, forge, lastKnownRevision.getRevision());
+
+        try {
+            ModuleRelease latestRelease = forge.getLatestVersion(module);
+            //TODO: warn if this release is earlier than lastKnownRevision
+            return latestRelease.toPackageRevision();
+        } catch (Forge.ModuleNotFound moduleNotFound) {
+            log("Module %s not found in forge %s: %s", module, forge, Exceptions.render(moduleNotFound));
+            return null;
+        }
     }
 
     protected void log(String message, Object... args) {
+        for (int i = 0; i < args.length; i++) {
+            if (args[i] instanceof Throwable) {
+                args[i] = Exceptions.render((Throwable) args[i]);
+            }
+        }
         LOGGER.info(String.format(message, args));
     }
 }

@@ -29,18 +29,18 @@ import static org.junit.Assert.assertThat;
 
 public class ForgeFactoryTest {
 
-    private ForgeFactory forgeFactory;
+    private Forge.Factory forgeFactory;
 
     @Before
     public void setUp() throws Exception {
-        forgeFactory = new ForgeFactory();
+        forgeFactory = new Forge.Factory();
     }
 
     @Test
     public void shouldBuildForge() throws Exception {
         RepositoryConfiguration repoConfig = new RepositoryConfiguration();
         repoConfig.add(new Property(FORGE_URL, "http://forge.example.com"));
-        Forge forge = forgeFactory.build(repoConfig);
-        assertThat(forge.getUrl().toString(), is("http://forge.example.com"));
+        Forge forge = new Forge.Factory().build(repoConfig);
+        assertThat(forge.getBaseUrl().toString(), is("http://forge.example.com"));
     }
 }

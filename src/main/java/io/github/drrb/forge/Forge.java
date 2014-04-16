@@ -18,8 +18,11 @@
 package io.github.drrb.forge;
 
 import com.google.api.client.http.*;
+import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
+import io.github.drrb.ForgePollerPluginConfig;
 
 import java.io.IOException;
 import java.net.URI;
@@ -29,6 +32,14 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 public class Forge {
+
+    public static class Factory {
+        public Forge build(RepositoryConfiguration repoConfig) {
+            String baseUrl = repoConfig.get(ForgePollerPluginConfig.FORGE_URL).getValue();
+            return new Forge(baseUrl, new NetHttpTransport());
+        }
+    }
+
     public static class PingFailure extends Exception {
 
         public PingFailure(String message) {
@@ -50,23 +61,23 @@ public class Forge {
         }
     }
 
-    private final String forgeUrl;
+    private final String baseUrl;
     private final HttpTransport httpTransport;
 
-    public Forge(String forgeUrl, HttpTransport httpTransport) {
-        this.forgeUrl = forgeUrl;
+    public Forge(String baseUrl, HttpTransport httpTransport) {
+        this.baseUrl = baseUrl;
         this.httpTransport = httpTransport;
     }
 
-    public URI getUrl() {
-        return URI.create(forgeUrl);
+    public URI getBaseUrl() {
+        return URI.create(baseUrl);
     }
 
     public void ping() throws PingFailure {
         try {
-            ping(getUrl());
+            ping(getBaseUrl());
         } catch (PingFailure e) {
-            throw new PingFailure(String.format("Failed to connect to forge at %s", getUrl()), e);
+            throw new PingFailure(String.format("Failed to connect to forge at %s", getBaseUrl()), e);
         }
     }
 
@@ -112,7 +123,7 @@ public class Forge {
 
     private URI moduleUrl(ModuleSpec moduleSpec) {
         //TODO: this will fail
-        String url = getUrl() + "/" + moduleSpec.getName() + ".json";
+        String url = getBaseUrl() + "/" + moduleSpec.getName() + ".json";
         return URI.create(url);
     }
 
@@ -121,5 +132,10 @@ public class Forge {
         HttpRequest request = requestFactory.buildGetRequest(new GenericUrl(url));
         request.setParser(new JsonObjectParser(new JacksonFactory()));
         return request.execute();
+    }
+
+    @Override
+    public String toString() {
+        return baseUrl;
     }
 }

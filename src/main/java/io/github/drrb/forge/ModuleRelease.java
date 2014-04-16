@@ -20,6 +20,7 @@ package io.github.drrb.forge;
 
 import com.google.api.client.json.GenericJson;
 import com.google.api.client.util.Key;
+import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
 
 public class ModuleRelease extends GenericJson implements Comparable<ModuleRelease> {
     @Key
@@ -38,5 +39,11 @@ public class ModuleRelease extends GenericJson implements Comparable<ModuleRelea
     @Override
     public int compareTo(ModuleRelease other) {
         return getVersion().compareTo(other.getVersion());
+    }
+
+    public PackageRevision toPackageRevision() {
+        //TODO: fill these in properly
+        //return new PackageRevision(release.getVersion(), null, release.getAuthor(), "Version " + release.getVersion() + " released", release.getBaseUrl());
+        return new PackageRevision(getVersion(), null, null);
     }
 }
