@@ -1,4 +1,4 @@
-#!/bin/bash -ex
+#!/bin/bash -exu
 #
 # Go Forge Poller
 # Copyright (C) 2014 drrb
@@ -17,10 +17,13 @@
 # along with Go Forge Poller. If not, see <http://www.gnu.org/licenses/>.
 #
 
+VERSION=${1:-current}
+
 rm -rf repo
 mkdir -p repo
-wget http://www.thoughtworks.com/products/docs/go/current/help/resources/go-plugin-api-current.jar
-wget http://www.thoughtworks.com/products/docs/go/current/help/resources/go-plugin-api-javadoc-current.jar
+
+wget http://www.thoughtworks.com/products/docs/go/${VERSION}/help/resources/go-plugin-api-current.jar
+wget http://www.thoughtworks.com/products/docs/go/${VERSION}/help/resources/go-plugin-api-javadoc-current.jar
 
 go_version=`unzip -q -c go-plugin-api-current.jar META-INF/MANIFEST.MF | awk '/Go-Version/ {print $2}'`
 
