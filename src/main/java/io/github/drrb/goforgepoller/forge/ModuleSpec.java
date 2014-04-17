@@ -75,23 +75,6 @@ public class ModuleSpec {
     }
 
     @Override
-    public boolean equals(Object other) {
-        if (other == null) return false;
-        if (other == this) return true;
-        if (other.getClass() != getClass()) return false;
-
-        ModuleSpec that = (ModuleSpec) other;
-        return Objects.equals(this.name, that.name)
-                && Objects.equals(this.lowerVersionBound, that.lowerVersionBound)
-                && Objects.equals(this.upperVersionBound, that.upperVersionBound);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, lowerVersionBound, upperVersionBound);
-    }
-
-    @Override
     public String toString() {
         StringBuilder string = new StringBuilder(name);
         string.append(" >= ").append(lowerVersionBound);
