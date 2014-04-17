@@ -1,3 +1,3 @@
 language: java
-before_install: mvn exec:exec
+before_install: ./download-dependencies.sh 13.3
 after_success: mvn clean cobertura:cobertura coveralls:cobertura
