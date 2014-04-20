@@ -44,9 +44,9 @@ public class ForgePoller implements PackageMaterialPoller {
         Forge forge = forgeFactory.build(repositoryConfiguration);
         try {
             forge.ping();
-            return new Result().withSuccessMessages("Connection successful");
+            return success();
         } catch (Forge.PingFailure pingFailure) {
-            return new Result().withErrorMessages(Exceptions.render(pingFailure));
+            return error(pingFailure);
         }
     }
 
@@ -57,9 +57,9 @@ public class ForgePoller implements PackageMaterialPoller {
 
         try {
             forge.ping(moduleSpec);
-            return new Result().withSuccessMessages("Found " + moduleSpec.getName());
+            return success("Found %s.", moduleSpec.getName());
         } catch (Forge.PingFailure pingFailure) {
-            return new Result().withErrorMessages(Exceptions.render(pingFailure));
+            return error(pingFailure);
         }
     }
 
@@ -73,7 +73,7 @@ public class ForgePoller implements PackageMaterialPoller {
             ModuleRelease latestRelease = forge.getLatestVersion(module);
             return latestRelease.toPackageRevision();
         } catch (Forge.ModuleNotFound moduleNotFound) {
-            log("Module %s not found in forge %s: %s", module, forge, Exceptions.render(moduleNotFound));
+            log("Module %s not found in forge %s: %s", module, forge, moduleNotFound);
             return null;
         }
     }
@@ -89,9 +89,21 @@ public class ForgePoller implements PackageMaterialPoller {
             //TODO: warn if this release is earlier than lastKnownRevision
             return latestRelease.toPackageRevision();
         } catch (Forge.ModuleNotFound moduleNotFound) {
-            log("Module %s not found in forge %s: %s", module, forge, Exceptions.render(moduleNotFound));
+            log("Module %s not found in forge %s: %s", module, forge, moduleNotFound);
             return null;
         }
+    }
+
+    private Result success(String message, String... args) {
+        return success().withSuccessMessages(String.format(message, args));
+    }
+
+    private Result success() {
+        return new Result();
+    }
+
+    private Result error(Throwable error) {
+        return new Result().withErrorMessages(Exceptions.render(error));
     }
 
     protected void log(String message, Object... args) {
