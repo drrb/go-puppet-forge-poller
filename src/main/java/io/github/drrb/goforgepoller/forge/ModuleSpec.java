@@ -30,9 +30,14 @@ public class ModuleSpec {
             String moduleName = packageConfig.get(MODULE_NAME).getValue();
             String lowerVersionBoundNumber = packageConfig.get(LOWER_VERSION_BOUND_INCLUSIVE).getValue();
             String upperVersionBoundNumber = packageConfig.get(UPPER_VERSION_BOUND_EXCLUSIVE).getValue();
-            return of(moduleName)
-                    .withVersionGreaterThanOrEqualTo(Version.of(lowerVersionBoundNumber))
-                    .withVersionLessThan(Version.of(upperVersionBoundNumber));
+            ModuleSpec spec = of(moduleName);
+            if (lowerVersionBoundNumber != null && !lowerVersionBoundNumber.trim().isEmpty()) {
+                spec = spec.withVersionGreaterThanOrEqualTo(Version.of(lowerVersionBoundNumber));
+            }
+            if (upperVersionBoundNumber != null && !upperVersionBoundNumber.trim().isEmpty()) {
+                spec = spec.withVersionLessThan(Version.of(upperVersionBoundNumber));
+            }
+            return spec;
         }
     }
 
