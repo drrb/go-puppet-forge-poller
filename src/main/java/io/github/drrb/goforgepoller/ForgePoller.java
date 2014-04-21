@@ -26,7 +26,11 @@ import com.thoughtworks.go.plugin.api.response.Result;
 import io.github.drrb.goforgepoller.forge.Forge;
 import io.github.drrb.goforgepoller.forge.ModuleRelease;
 import io.github.drrb.goforgepoller.forge.ModuleSpec;
+import io.github.drrb.goforgepoller.forge.Version;
 import io.github.drrb.goforgepoller.util.Exceptions;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.max;
 
 public class ForgePoller implements PackageMaterialPoller {
 
@@ -42,6 +46,8 @@ public class ForgePoller implements PackageMaterialPoller {
     @Override
     public Result checkConnectionToRepository(RepositoryConfiguration repositoryConfiguration) {
         Forge forge = forgeFactory.build(repositoryConfiguration);
+        log("Checking connection to forge at %s", forge);
+
         try {
             forge.ping();
             return success();
@@ -54,6 +60,7 @@ public class ForgePoller implements PackageMaterialPoller {
     public Result checkConnectionToPackage(PackageConfiguration packageConfiguration, RepositoryConfiguration repositoryConfiguration) {
         ModuleSpec moduleSpec = moduleSpecFactory.build(packageConfiguration);
         Forge forge = forgeFactory.build(repositoryConfiguration);
+        log("Checking connection to module %s in forge at %s", moduleSpec, forge);
 
         try {
             forge.ping(moduleSpec);
@@ -86,12 +93,21 @@ public class ForgePoller implements PackageMaterialPoller {
 
         try {
             ModuleRelease latestRelease = forge.getLatestVersion(module);
-            //TODO: warn if this release is earlier than lastKnownRevision
-            return latestRelease.toPackageRevision();
+            ModuleRelease lastKnownRelease = ModuleRelease.fromPackageRevision(lastKnownRevision);
+            if (greaterThan(lastKnownRelease, latestRelease)) {
+                //TODO: warn if this release is earlier than lastKnownRevision
+                return latestRelease.toPackageRevision();
+            } else {
+                return null;
+            }
         } catch (Forge.ModuleNotFound moduleNotFound) {
             log("Module %s not found in forge %s: %s", module, forge, moduleNotFound);
             return null;
         }
+    }
+
+    private <T extends Comparable<T>> boolean greaterThan(T a, T b) {
+        return b.compareTo(a) > 0;
     }
 
     private Result success(String message, String... args) {

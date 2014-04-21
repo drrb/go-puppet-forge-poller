@@ -19,8 +19,6 @@ package io.github.drrb.goforgepoller.forge;
 
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration;
 
-import java.util.Objects;
-
 import static io.github.drrb.goforgepoller.ForgePollerPluginConfig.*;
 
 public class ModuleSpec {

@@ -17,6 +17,7 @@
  */
 package io.github.drrb.goforgepoller;
 
+import com.thoughtworks.go.plugin.api.logging.Logger;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageMaterialConfiguration;
 import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
@@ -26,6 +27,7 @@ import com.thoughtworks.go.plugin.api.response.validation.ValidationResult;
 import static io.github.drrb.goforgepoller.util.DisplayedProperty.property;
 
 public class ForgePollerPluginConfig implements PackageMaterialConfiguration {
+    private static final Logger LOGGER = Logger.getLoggerFor(ForgePollerPluginConfig.class);
     public static final String FORGE_URL = "FORGE_URL";
 
     public static final String MODULE_NAME = "MODULE_NAME";
@@ -63,6 +65,7 @@ public class ForgePollerPluginConfig implements PackageMaterialConfiguration {
     public ValidationResult isRepositoryConfigurationValid(RepositoryConfiguration repositoryConfiguration) {
         ValidationResult validationResult = new ValidationResult();
         String forgeUrl = repositoryConfiguration.get(FORGE_URL).getValue();
+        LOGGER.info(String.format("Validating configuration for forge (URL = %s)", forgeUrl));
         if (forgeUrl == null || forgeUrl.trim().isEmpty()) {
             validationResult.addError(new ValidationError("Forge URL is required"));
         }
@@ -73,6 +76,7 @@ public class ForgePollerPluginConfig implements PackageMaterialConfiguration {
     public ValidationResult isPackageConfigurationValid(PackageConfiguration packageConfiguration, RepositoryConfiguration repositoryConfiguration) {
         ValidationResult validationResult = new ValidationResult();
         String moduleName = packageConfiguration.get(MODULE_NAME).getValue();
+        LOGGER.info(String.format("Validating configuration for module (name = %s)", moduleName));
         if (moduleName == null || moduleName.trim().isEmpty()) {
             validationResult.addError(new ValidationError("Module name is required"));
         } else if (! moduleName.matches("\\A[a-z][a-z0-9_]*/[a-z][a-z0-9_]*\\Z")) {

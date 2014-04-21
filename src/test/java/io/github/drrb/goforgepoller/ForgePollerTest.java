@@ -121,10 +121,21 @@ public class ForgePollerTest {
 
     @Test
     public void shouldReturnLatestVersionOfPackageWhenReturningLatestModification() throws Exception {
+        PackageRevision lastKnownRevision = new PackageRevision("0.9.0", null, null);
         when(forge.getLatestVersion(moduleSpec)).thenReturn(moduleRelease);
 
-        PackageRevision result = poller.latestModificationSince(packageConfig, repoConfig, mock(PackageRevision.class));
+        PackageRevision result = poller.latestModificationSince(packageConfig, repoConfig, lastKnownRevision);
 
         assertThat(result.getRevision(), is("1.0.0"));
+    }
+
+    @Test
+    public void shouldReturnNullIfLatestVersionIsntGreaterThanLastKnownVersion() throws Exception {
+        PackageRevision lastKnownRevision = new PackageRevision("1.0.0", null, null);
+        when(forge.getLatestVersion(moduleSpec)).thenReturn(moduleRelease);
+
+        PackageRevision result = poller.latestModificationSince(packageConfig, repoConfig, lastKnownRevision);
+
+        assertThat(result, is(nullValue()));
     }
 }

@@ -22,6 +22,8 @@ import com.google.api.client.json.GenericJson;
 import com.google.api.client.util.Key;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
 
+import java.util.Date;
+
 public class ModuleRelease extends GenericJson implements Comparable<ModuleRelease> {
     @Key
     private String version;
@@ -41,9 +43,17 @@ public class ModuleRelease extends GenericJson implements Comparable<ModuleRelea
         return getVersion().compareTo(other.getVersion());
     }
 
+    public static ModuleRelease fromPackageRevision(PackageRevision packageRevision) {
+        return ModuleRelease.with(Version.of(packageRevision.getRevision()));
+    }
+
     public PackageRevision toPackageRevision() {
         //TODO: fill these in properly
         //return new PackageRevision(release.getVersion(), null, release.getAuthor(), "Version " + release.getVersion() + " released", release.getBaseUrl());
-        return new PackageRevision(getVersion(), null, null);
+        PackageRevision revision = new PackageRevision(getVersion(), new Date(0), "user");
+        //TODO: add these to make location/version available to pipeline as env variables
+//        revision.addData("LOCATION", "http://example.com");
+//        revision.addData("VERSION", getVersion());
+        return revision;
     }
 }
