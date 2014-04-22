@@ -1,3 +1,5 @@
 - Add logging
 - Fix URL constructing
 - Populate PackageRevision info properly
+- Remove javax jar
+- Support Forge API v3
