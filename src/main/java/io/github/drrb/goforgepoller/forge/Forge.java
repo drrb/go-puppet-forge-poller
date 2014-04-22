@@ -23,6 +23,8 @@ import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
 import io.github.drrb.goforgepoller.ForgePollerPluginConfig;
+import io.github.drrb.goforgepoller.forge.api.ModuleMetadata;
+import io.github.drrb.goforgepoller.forge.api.ModuleRelease;
 
 import java.io.IOException;
 import java.net.URI;
@@ -89,7 +91,7 @@ public class Forge {
         }
     }
 
-    public ModuleRelease getLatestVersion(ModuleSpec module) throws ModuleNotFound {
+    public ModuleVersion getLatestVersion(ModuleSpec module) throws ModuleNotFound {
         List<ModuleRelease> releases = getAllVersions(module);
 
         SortedSet<ModuleRelease> orderedReleases = new TreeSet<>(releases);
@@ -97,10 +99,19 @@ public class Forge {
         ModuleRelease lowerVersionBound = ModuleRelease.with(module.getLowerVersionBound());
 
         try {
-            return orderedReleases.tailSet(lowerVersionBound).headSet(upperVersionBound).last();
+            SortedSet<ModuleRelease> releasesAfterLowerBound = orderedReleases.tailSet(lowerVersionBound);
+            SortedSet<ModuleRelease> releasesInRange = releasesAfterLowerBound.headSet(upperVersionBound);
+            ModuleRelease latestReleaseInRange = releasesInRange.last();
+
+            return getModuleVersion(module, latestReleaseInRange);
         } catch (NoSuchElementException e) {
             throw new ModuleNotFound(String.format("No module versions found satisfying '%s'", module), e);
         }
+    }
+
+    private ModuleVersion getModuleVersion(ModuleSpec module, ModuleRelease release) {
+        //TODO: look it up
+        return new ModuleVersion(module.getName(), Version.of(release.getVersion()));
     }
 
     private List<ModuleRelease> getAllVersions(ModuleSpec module) throws ModuleNotFound {

@@ -24,7 +24,8 @@ import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision
 import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
 import com.thoughtworks.go.plugin.api.response.Result;
 import io.github.drrb.goforgepoller.forge.Forge;
-import io.github.drrb.goforgepoller.forge.ModuleRelease;
+import io.github.drrb.goforgepoller.forge.ModuleVersion;
+import io.github.drrb.goforgepoller.forge.api.ModuleRelease;
 import io.github.drrb.goforgepoller.forge.ModuleSpec;
 import io.github.drrb.goforgepoller.forge.Version;
 import io.github.drrb.goforgepoller.util.Exceptions;
@@ -77,7 +78,7 @@ public class ForgePoller implements PackageMaterialPoller {
         log("Looking up latest revision of module %s in forge %s", module, forge);
 
         try {
-            ModuleRelease latestRelease = forge.getLatestVersion(module);
+            ModuleVersion latestRelease = forge.getLatestVersion(module);
             return latestRelease.toPackageRevision();
         } catch (Forge.ModuleNotFound moduleNotFound) {
             log("Module %s not found in forge %s: %s", module, forge, moduleNotFound);
@@ -89,12 +90,12 @@ public class ForgePoller implements PackageMaterialPoller {
     public PackageRevision latestModificationSince(PackageConfiguration packageConfiguration, RepositoryConfiguration repositoryConfiguration, PackageRevision lastKnownRevision) {
         ModuleSpec module = moduleSpecFactory.build(packageConfiguration);
         Forge forge = forgeFactory.build(repositoryConfiguration);
-        log("Looking up latest revision of module %s in forge %s since version %s", module, forge, lastKnownRevision.getRevision());
+        Version lastKnownReleaseVersion = Version.of(lastKnownRevision.getRevision());
+        log("Looking up latest release of module %s in forge %s since version %s", module, forge, lastKnownReleaseVersion);
 
         try {
-            ModuleRelease latestRelease = forge.getLatestVersion(module);
-            ModuleRelease lastKnownRelease = ModuleRelease.fromPackageRevision(lastKnownRevision);
-            if (greaterThan(lastKnownRelease, latestRelease)) {
+            ModuleVersion latestRelease = forge.getLatestVersion(module);
+            if (latestRelease.getVersion().isGreaterThan(lastKnownReleaseVersion)) {
                 //TODO: warn if this release is earlier than lastKnownRevision
                 return latestRelease.toPackageRevision();
             } else {
@@ -104,10 +105,6 @@ public class ForgePoller implements PackageMaterialPoller {
             log("Module %s not found in forge %s: %s", module, forge, moduleNotFound);
             return null;
         }
-    }
-
-    private <T extends Comparable<T>> boolean greaterThan(T a, T b) {
-        return b.compareTo(a) > 0;
     }
 
     private Result success(String message, String... args) {

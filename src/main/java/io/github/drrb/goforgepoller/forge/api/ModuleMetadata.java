@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Go Forge Poller. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.github.drrb.goforgepoller.forge;
+package io.github.drrb.goforgepoller.forge.api;
 
 
 import com.google.api.client.json.GenericJson;

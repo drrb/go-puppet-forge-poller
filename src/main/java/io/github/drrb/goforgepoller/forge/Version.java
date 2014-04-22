@@ -104,4 +104,8 @@ public class Version implements Comparable<Version> {
     public int hashCode() {
         return Objects.hash(string);
     }
+
+    public boolean isGreaterThan(Version other) {
+        return this.compareTo(other) > 0;
+    }
 }

@@ -25,6 +25,7 @@ import com.google.api.client.testing.http.MockLowLevelHttpResponse;
 import com.thoughtworks.go.plugin.api.material.packagerepository.Property;
 import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
 import io.github.drrb.goforgepoller.ForgePollerPluginConfig;
+import io.github.drrb.goforgepoller.forge.api.ModuleRelease;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -97,8 +98,8 @@ public class ForgeTest {
         MockLowLevelHttpResponse response = new MockLowLevelHttpResponse().setStatusCode(200).setContent(metadata);
         responses.put("http://forge.example.com/forge/puppetlabs/apache.json", response);
 
-        ModuleRelease latestVersion = forge.getLatestVersion(ModuleSpec.of("puppetlabs/apache"));
-        assertThat(latestVersion.getVersion(), is("1.0.10"));
+        ModuleVersion latestVersion = forge.getLatestVersion(ModuleSpec.of("puppetlabs/apache"));
+        assertThat(latestVersion.getVersion(), is(Version.of("1.0.10")));
     }
 
     @Test
@@ -107,8 +108,8 @@ public class ForgeTest {
         MockLowLevelHttpResponse response = new MockLowLevelHttpResponse().setStatusCode(200).setContent(metadata);
         responses.put("http://forge.example.com/forge/puppetlabs/apache.json", response);
 
-        ModuleRelease latestVersion = forge.getLatestVersion(ModuleSpec.of("puppetlabs/apache").withVersionLessThan(Version.of("1.0.0")));
-        assertThat(latestVersion.getVersion(), is("0.11.0"));
+        ModuleVersion latestVersion = forge.getLatestVersion(ModuleSpec.of("puppetlabs/apache").withVersionLessThan(Version.of("1.0.0")));
+        assertThat(latestVersion.getVersion(), is(Version.of("0.11.0")));
     }
 
     @Test(expected = Forge.ModuleNotFound.class)

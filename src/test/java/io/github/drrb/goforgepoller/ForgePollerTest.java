@@ -22,7 +22,8 @@ import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision
 import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
 import com.thoughtworks.go.plugin.api.response.Result;
 import io.github.drrb.goforgepoller.forge.Forge;
-import io.github.drrb.goforgepoller.forge.ModuleRelease;
+import io.github.drrb.goforgepoller.forge.ModuleVersion;
+import io.github.drrb.goforgepoller.forge.api.ModuleRelease;
 import io.github.drrb.goforgepoller.forge.ModuleSpec;
 import io.github.drrb.goforgepoller.forge.Version;
 import org.junit.Before;
@@ -53,7 +54,7 @@ public class ForgePollerTest {
 
     private RepositoryConfiguration repoConfig;
     private PackageConfiguration packageConfig;
-    private ModuleRelease moduleRelease;
+    private ModuleVersion moduleVersion;
 
     @Before
     public void setUp() throws Exception {
@@ -61,7 +62,7 @@ public class ForgePollerTest {
 
         repoConfig = new RepositoryConfiguration();
         packageConfig = new PackageConfiguration();
-        moduleRelease = ModuleRelease.with(Version.of("1.0.0"));
+        moduleVersion = new ModuleVersion("", Version.of("1.0.0"));
 
         when(forgeFactory.build(repoConfig)).thenReturn(forge);
         when(moduleSpecFactory.build(packageConfig)).thenReturn(moduleSpec);
@@ -103,7 +104,7 @@ public class ForgePollerTest {
 
     @Test
     public void shouldReturnLatestVersionOfPackage() throws Exception {
-        when(forge.getLatestVersion(moduleSpec)).thenReturn(moduleRelease);
+        when(forge.getLatestVersion(moduleSpec)).thenReturn(moduleVersion);
 
         PackageRevision result = poller.getLatestRevision(packageConfig, repoConfig);
 
@@ -122,7 +123,7 @@ public class ForgePollerTest {
     @Test
     public void shouldReturnLatestVersionOfPackageWhenReturningLatestModification() throws Exception {
         PackageRevision lastKnownRevision = new PackageRevision("0.9.0", null, null);
-        when(forge.getLatestVersion(moduleSpec)).thenReturn(moduleRelease);
+        when(forge.getLatestVersion(moduleSpec)).thenReturn(moduleVersion);
 
         PackageRevision result = poller.latestModificationSince(packageConfig, repoConfig, lastKnownRevision);
 
@@ -132,7 +133,7 @@ public class ForgePollerTest {
     @Test
     public void shouldReturnNullIfLatestVersionIsntGreaterThanLastKnownVersion() throws Exception {
         PackageRevision lastKnownRevision = new PackageRevision("1.0.0", null, null);
-        when(forge.getLatestVersion(moduleSpec)).thenReturn(moduleRelease);
+        when(forge.getLatestVersion(moduleSpec)).thenReturn(moduleVersion);
 
         PackageRevision result = poller.latestModificationSince(packageConfig, repoConfig, lastKnownRevision);
 
