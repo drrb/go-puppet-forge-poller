@@ -41,7 +41,7 @@ public class ModuleVersion {
     public PackageRevision toPackageRevision() {
         //TODO: fill these in properly
         //return new PackageRevision(getVersion(), null, getAuthor(), "Version " + getVersion() + " released", release.getBaseUrl());
-        PackageRevision revision = new PackageRevision(version.toString(), new Date(0), "user");
+        PackageRevision revision = new PackageRevision(version.toString(), /* TODO: should this be just 'new Date()' when we don't know the last modified date? */ new Date(0), "user");
         //TODO: add these to make location/version available to pipeline as env variables
         //revision.addData("LOCATION", "http://example.com");
         //revision.addData("VERSION", getVersion());
