@@ -139,4 +139,14 @@ public class ForgePollerTest {
 
         assertThat(result, is(nullValue()));
     }
+
+    @Test
+    public void shouldReturnNullIfLatestVersionNotFound() throws Exception {
+        PackageRevision lastKnownRevision = new PackageRevision("1.0.0", null, null);
+        when(forge.getLatestVersion(moduleSpec)).thenThrow(new Forge.ModuleNotFound("Failed to list versions of module 'puppetlabs/apache' (500)"));
+
+        PackageRevision result = poller.latestModificationSince(packageConfig, repoConfig, lastKnownRevision);
+
+        assertThat(result, is(nullValue()));
+    }
 }
