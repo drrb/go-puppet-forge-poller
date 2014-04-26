@@ -22,10 +22,9 @@ import com.google.api.client.http.LowLevelHttpResponse;
 import com.google.api.client.testing.http.MockHttpTransport;
 import com.google.api.client.testing.http.MockLowLevelHttpRequest;
 import com.google.api.client.testing.http.MockLowLevelHttpResponse;
-import com.thoughtworks.go.plugin.api.material.packagerepository.Property;
+import com.thoughtworks.go.plugin.api.config.Property;
 import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
 import io.github.drrb.goforgepoller.ForgePollerPluginConfig;
-import io.github.drrb.goforgepoller.forge.api.ModuleRelease;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -63,7 +62,7 @@ public class ForgeTest {
     @Test
     public void factoryCreatesForge() throws Exception {
         RepositoryConfiguration repoConfig = new RepositoryConfiguration();
-        repoConfig.add(new Property(ForgePollerPluginConfig.FORGE_URL, "http://example.com"));
+        repoConfig.add(new Property(ForgePollerPluginConfig.FORGE_URL).withDefault("http://example.com"));
         forge = new Forge.Factory().build(repoConfig);
         assertThat(forge.getBaseUrl().toString(), is("http://example.com"));
     }

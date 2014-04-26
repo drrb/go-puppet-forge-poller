@@ -17,7 +17,7 @@
  */
 package io.github.drrb.goforgepoller.util;
 
-import com.thoughtworks.go.plugin.api.material.packagerepository.Property;
+import com.thoughtworks.go.plugin.api.config.Property;
 
 public class DisplayedProperty {
 

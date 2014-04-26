@@ -22,9 +22,8 @@ import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision
 import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
 import com.thoughtworks.go.plugin.api.response.Result;
 import io.github.drrb.goforgepoller.forge.Forge;
-import io.github.drrb.goforgepoller.forge.ModuleVersion;
-import io.github.drrb.goforgepoller.forge.api.ModuleRelease;
 import io.github.drrb.goforgepoller.forge.ModuleSpec;
+import io.github.drrb.goforgepoller.forge.ModuleVersion;
 import io.github.drrb.goforgepoller.forge.Version;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,7 +35,8 @@ import static io.github.drrb.goforgepoller.forge.Forge.PingFailure;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ForgePollerTest {

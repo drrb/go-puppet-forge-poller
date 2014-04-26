@@ -17,7 +17,7 @@
  */
 package io.github.drrb.goforgepoller.forge;
 
-import com.thoughtworks.go.plugin.api.material.packagerepository.Property;
+import com.thoughtworks.go.plugin.api.config.Property;
 import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,8 +38,8 @@ public class ForgeFactoryTest {
     @Test
     public void shouldBuildForge() throws Exception {
         RepositoryConfiguration repoConfig = new RepositoryConfiguration();
-        repoConfig.add(new Property(FORGE_URL, "http://forge.example.com"));
-        Forge forge = new Forge.Factory().build(repoConfig);
+        repoConfig.add(new Property(FORGE_URL).withDefault("http://forge.example.com"));
+        Forge forge = forgeFactory.build(repoConfig);
         assertThat(forge.getBaseUrl().toString(), is("http://forge.example.com"));
     }
 }

@@ -28,7 +28,8 @@ import io.github.drrb.goforgepoller.forge.ModuleVersion;
 import io.github.drrb.goforgepoller.forge.Version;
 import io.github.drrb.goforgepoller.util.Log;
 
-import static io.github.drrb.goforgepoller.util.Results.*;
+import static io.github.drrb.goforgepoller.util.Results.error;
+import static io.github.drrb.goforgepoller.util.Results.success;
 
 public class ForgePoller implements PackageMaterialPoller {
 
