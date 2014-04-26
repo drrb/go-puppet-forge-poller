@@ -4,3 +4,4 @@
 /target/
 *.sw[op]
 /dependency-reduced-pom.xml
+/deploy

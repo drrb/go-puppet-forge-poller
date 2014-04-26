@@ -42,11 +42,26 @@ public class ModuleSpecTest {
     }
 
     @Test
+    //TODO: does this actually happen?
     public void factoryIgnoresNullVersionNumbers() throws Exception {
         PackageConfiguration packageConfig = new PackageConfiguration();
         packageConfig.add(new Property(ForgePollerPluginConfig.MODULE_NAME, "puppetlabs/apache"));
         packageConfig.add(new Property(ForgePollerPluginConfig.LOWER_VERSION_BOUND_INCLUSIVE, null));
         packageConfig.add(new Property(ForgePollerPluginConfig.UPPER_VERSION_BOUND_EXCLUSIVE, null));
+
+        ModuleSpec moduleSpec = new ModuleSpec.Factory().build(packageConfig);
+
+        assertThat(moduleSpec.getLowerVersionBound(), is(Version.ZERO));
+        assertThat(moduleSpec.getUpperVersionBound(), is(Version.INFINITY));
+    }
+
+    /**
+     * This happens when checking the connection to the repository after creating the resource
+     */
+    @Test
+    public void factoryIgnoresMissingVersionNumbers() throws Exception {
+        PackageConfiguration packageConfig = new PackageConfiguration();
+        packageConfig.add(new Property(ForgePollerPluginConfig.MODULE_NAME, "puppetlabs/apache"));
 
         ModuleSpec moduleSpec = new ModuleSpec.Factory().build(packageConfig);
 

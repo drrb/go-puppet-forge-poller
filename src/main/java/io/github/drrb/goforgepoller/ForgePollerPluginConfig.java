@@ -17,17 +17,22 @@
  */
 package io.github.drrb.goforgepoller;
 
-import com.thoughtworks.go.plugin.api.logging.Logger;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageMaterialConfiguration;
 import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
 import com.thoughtworks.go.plugin.api.response.validation.ValidationError;
 import com.thoughtworks.go.plugin.api.response.validation.ValidationResult;
+import io.github.drrb.goforgepoller.forge.Version;
+import io.github.drrb.goforgepoller.util.Log;
+import io.github.drrb.goforgepoller.util.SaferConfiguration;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import static io.github.drrb.goforgepoller.util.DisplayedProperty.property;
 
 public class ForgePollerPluginConfig implements PackageMaterialConfiguration {
-    private static final Logger LOGGER = Logger.getLoggerFor(ForgePollerPluginConfig.class);
+    private static final Log LOG = Log.getLogFor(ForgePollerPluginConfig.class);
     public static final String FORGE_URL = "FORGE_URL";
 
     public static final String MODULE_NAME = "MODULE_NAME";
@@ -63,25 +68,54 @@ public class ForgePollerPluginConfig implements PackageMaterialConfiguration {
 
     @Override
     public ValidationResult isRepositoryConfigurationValid(RepositoryConfiguration repositoryConfiguration) {
+        LOG.debug("isRepositoryConfigurationValid(%s)", repositoryConfiguration);
+
+        SaferConfiguration configuration = new SaferConfiguration(repositoryConfiguration);
+        String forgeUrl = configuration.get(FORGE_URL);
+        LOG.info("Validating configuration for forge (URL = %s)", forgeUrl);
+
         ValidationResult validationResult = new ValidationResult();
-        String forgeUrl = repositoryConfiguration.get(FORGE_URL).getValue();
-        LOGGER.info(String.format("Validating configuration for forge (URL = %s)", forgeUrl));
-        if (forgeUrl == null || forgeUrl.trim().isEmpty()) {
-            validationResult.addError(new ValidationError("Forge URL is required"));
+        if (forgeUrl.isEmpty()) {
+            validationResult.addError(new ValidationError(FORGE_URL, "Forge URL is mandatory"));
+        } else {
+            try {
+                URL url = new URL(forgeUrl);
+                if (!url.getProtocol().matches("^https?$")) {
+                    validationResult.addError(new ValidationError(FORGE_URL, "Forge URL must be an HTTP(S) URL"));
+                }
+            } catch (MalformedURLException e) {
+                validationResult.addError(new ValidationError(FORGE_URL, "Forge URL must be a URL"));
+            }
         }
         return validationResult;
     }
 
     @Override
     public ValidationResult isPackageConfigurationValid(PackageConfiguration packageConfiguration, RepositoryConfiguration repositoryConfiguration) {
+        LOG.debug("isPackageConfigurationValid(%s, %s)", packageConfiguration, repositoryConfiguration);
+
+        SaferConfiguration configuration = new SaferConfiguration(packageConfiguration);
+        String moduleName = configuration.get(MODULE_NAME);
+        String lowerVersionBound = configuration.get(LOWER_VERSION_BOUND_INCLUSIVE);
+        String upperVersionBound = configuration.get(UPPER_VERSION_BOUND_EXCLUSIVE);
+        LOG.info("Validating configuration for module (name = %s, lowerVersionBound = %s, upperVersionBound = %s)", moduleName, lowerVersionBound, upperVersionBound);
+
         ValidationResult validationResult = new ValidationResult();
-        String moduleName = packageConfiguration.get(MODULE_NAME).getValue();
-        LOGGER.info(String.format("Validating configuration for module (name = %s)", moduleName));
-        if (moduleName == null || moduleName.trim().isEmpty()) {
-            validationResult.addError(new ValidationError("Module name is required"));
-        } else if (! moduleName.matches("\\A[a-z][a-z0-9_]*/[a-z][a-z0-9_]*\\Z")) {
-            validationResult.addError(new ValidationError("Module name should be in format \"author/module\""));
+
+        if (moduleName.isEmpty()) {
+            validationResult.addError(new ValidationError(MODULE_NAME, "Module name is mandatory"));
+        } else if (!moduleName.matches("\\A[a-z][a-z0-9_]*/[a-z][a-z0-9_]*\\Z")) {
+            validationResult.addError(new ValidationError(MODULE_NAME, "Module name should be in format \"author/module\""));
         }
+
+        if (!(lowerVersionBound.isEmpty() || Version.isValid(lowerVersionBound))) {
+            validationResult.addError(new ValidationError(LOWER_VERSION_BOUND_INCLUSIVE, "Version to poll >= should be a version number"));
+        }
+
+        if (!(upperVersionBound.isEmpty() || Version.isValid(upperVersionBound))) {
+            validationResult.addError(new ValidationError(UPPER_VERSION_BOUND_EXCLUSIVE, "Version to poll < should be a version number"));
+        }
+
         return validationResult;
     }
 }

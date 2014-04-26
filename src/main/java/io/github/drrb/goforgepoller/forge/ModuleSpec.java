@@ -18,6 +18,7 @@
 package io.github.drrb.goforgepoller.forge;
 
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration;
+import io.github.drrb.goforgepoller.util.SaferConfiguration;
 
 import static io.github.drrb.goforgepoller.ForgePollerPluginConfig.*;
 
@@ -25,14 +26,15 @@ public class ModuleSpec {
 
     public static class Factory {
         public ModuleSpec build(PackageConfiguration packageConfig) {
-            String moduleName = packageConfig.get(MODULE_NAME).getValue();
-            String lowerVersionBoundNumber = packageConfig.get(LOWER_VERSION_BOUND_INCLUSIVE).getValue();
-            String upperVersionBoundNumber = packageConfig.get(UPPER_VERSION_BOUND_EXCLUSIVE).getValue();
+            SaferConfiguration configuration = new SaferConfiguration(packageConfig);
+            String moduleName = configuration.get(MODULE_NAME);
+            String lowerVersionBoundNumber = configuration.get(LOWER_VERSION_BOUND_INCLUSIVE);
+            String upperVersionBoundNumber = configuration.get(UPPER_VERSION_BOUND_EXCLUSIVE);
             ModuleSpec spec = of(moduleName);
-            if (lowerVersionBoundNumber != null && !lowerVersionBoundNumber.trim().isEmpty()) {
+            if (!lowerVersionBoundNumber.trim().isEmpty()) {
                 spec = spec.withVersionGreaterThanOrEqualTo(Version.of(lowerVersionBoundNumber));
             }
-            if (upperVersionBoundNumber != null && !upperVersionBoundNumber.trim().isEmpty()) {
+            if (!upperVersionBoundNumber.trim().isEmpty()) {
                 spec = spec.withVersionLessThan(Version.of(upperVersionBoundNumber));
             }
             return spec;

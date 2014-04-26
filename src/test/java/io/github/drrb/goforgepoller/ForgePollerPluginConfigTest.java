@@ -25,8 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static com.thoughtworks.go.plugin.api.material.packagerepository.Property.DISPLAY_NAME;
-import static io.github.drrb.goforgepoller.ForgePollerPluginConfig.FORGE_URL;
-import static io.github.drrb.goforgepoller.ForgePollerPluginConfig.MODULE_NAME;
+import static io.github.drrb.goforgepoller.ForgePollerPluginConfig.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -69,7 +68,7 @@ public class ForgePollerPluginConfigTest {
         ValidationResult validationResult = config.isRepositoryConfigurationValid(repoConfig);
 
         assertThat(validationResult.isSuccessful(), is(false));
-        assertThat(validationResult.getMessages(), hasItem(equalTo("Forge URL is required")));
+        assertThat(validationResult.getMessages(), hasItem(equalTo("Forge URL is mandatory")));
     }
 
     @Test
@@ -80,7 +79,29 @@ public class ForgePollerPluginConfigTest {
         ValidationResult validationResult = config.isRepositoryConfigurationValid(repoConfig);
 
         assertThat(validationResult.isSuccessful(), is(false));
-        assertThat(validationResult.getMessages(), hasItem(equalTo("Forge URL is required")));
+        assertThat(validationResult.getMessages(), hasItem(equalTo("Forge URL is mandatory")));
+    }
+
+    @Test
+    public void shouldAcceptRepoConfigIfForgeUrlIsInvalid() throws Exception {
+        RepositoryConfiguration repoConfig = new RepositoryConfiguration();
+        repoConfig.add(new Property(FORGE_URL, "x"));
+
+        ValidationResult validationResult = config.isRepositoryConfigurationValid(repoConfig);
+
+        assertThat(validationResult.isSuccessful(), is(false));
+        assertThat(validationResult.getMessages(), hasItem(equalTo("Forge URL must be a URL")));
+    }
+
+    @Test
+    public void shouldAcceptRepoConfigIfForgeUrlIsNonHttp() throws Exception {
+        RepositoryConfiguration repoConfig = new RepositoryConfiguration();
+        repoConfig.add(new Property(FORGE_URL, "ftp://example.com"));
+
+        ValidationResult validationResult = config.isRepositoryConfigurationValid(repoConfig);
+
+        assertThat(validationResult.isSuccessful(), is(false));
+        assertThat(validationResult.getMessages(), hasItem(equalTo("Forge URL must be an HTTP(S) URL")));
     }
 
     @Test
@@ -101,7 +122,7 @@ public class ForgePollerPluginConfigTest {
         ValidationResult validationResult = config.isPackageConfigurationValid(packageConfig, new RepositoryConfiguration());
 
         assertThat(validationResult.isSuccessful(), is(false));
-        assertThat(validationResult.getMessages(), hasItem(equalTo("Module name is required")));
+        assertThat(validationResult.getMessages(), hasItem(equalTo("Module name is mandatory")));
     }
 
     @Test
@@ -112,7 +133,7 @@ public class ForgePollerPluginConfigTest {
         ValidationResult validationResult = config.isPackageConfigurationValid(packageConfig, new RepositoryConfiguration());
 
         assertThat(validationResult.isSuccessful(), is(false));
-        assertThat(validationResult.getMessages(), hasItem(equalTo("Module name is required")));
+        assertThat(validationResult.getMessages(), hasItem(equalTo("Module name is mandatory")));
     }
 
     @Test
@@ -124,5 +145,29 @@ public class ForgePollerPluginConfigTest {
 
         assertThat(validationResult.isSuccessful(), is(false));
         assertThat(validationResult.getMessages(), hasItem(equalTo("Module name should be in format \"author/module\"")));
+    }
+
+    @Test
+    public void shouldRejectPackageConfigIfLowerVersionBoundInWrongFormat() throws Exception {
+        PackageConfiguration packageConfig = new PackageConfiguration();
+        packageConfig.add(new Property(MODULE_NAME, "puppetlabs/apache"));
+        packageConfig.add(new Property(LOWER_VERSION_BOUND_INCLUSIVE, "XX Bad format XX"));
+
+        ValidationResult validationResult = config.isPackageConfigurationValid(packageConfig, new RepositoryConfiguration());
+
+        assertThat(validationResult.isSuccessful(), is(false));
+        assertThat(validationResult.getMessages(), hasItem(equalTo("Version to poll >= should be a version number")));
+    }
+
+    @Test
+    public void shouldRejectPackageConfigIfUpperVersionBoundInWrongFormat() throws Exception {
+        PackageConfiguration packageConfig = new PackageConfiguration();
+        packageConfig.add(new Property(MODULE_NAME, "puppetlabs/apache"));
+        packageConfig.add(new Property(UPPER_VERSION_BOUND_EXCLUSIVE, "XX Bad format XX"));
+
+        ValidationResult validationResult = config.isPackageConfigurationValid(packageConfig, new RepositoryConfiguration());
+
+        assertThat(validationResult.isSuccessful(), is(false));
+        assertThat(validationResult.getMessages(), hasItem(equalTo("Version to poll < should be a version number")));
     }
 }

@@ -68,6 +68,12 @@ public class ForgeTest {
         assertThat(forge.getBaseUrl().toString(), is("http://example.com"));
     }
 
+    @Test(expected = NullPointerException.class)
+    public void shouldRaiseExceptionIfUrlIsInvalid() throws Exception {
+        forge = new Forge("x", httpTransport);
+        forge.ping();
+    }
+
     @Test
     public void shouldDoNothingIfPingReturns200() throws Exception {
         responses.put("http://forge.example.com/forge", new MockLowLevelHttpResponse().setStatusCode(200));

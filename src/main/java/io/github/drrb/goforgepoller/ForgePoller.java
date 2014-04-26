@@ -17,25 +17,22 @@
  */
 package io.github.drrb.goforgepoller;
 
-import com.thoughtworks.go.plugin.api.logging.Logger;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageMaterialPoller;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
 import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
 import com.thoughtworks.go.plugin.api.response.Result;
 import io.github.drrb.goforgepoller.forge.Forge;
-import io.github.drrb.goforgepoller.forge.ModuleVersion;
-import io.github.drrb.goforgepoller.forge.api.ModuleRelease;
 import io.github.drrb.goforgepoller.forge.ModuleSpec;
+import io.github.drrb.goforgepoller.forge.ModuleVersion;
 import io.github.drrb.goforgepoller.forge.Version;
-import io.github.drrb.goforgepoller.util.Exceptions;
+import io.github.drrb.goforgepoller.util.Log;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.max;
+import static io.github.drrb.goforgepoller.util.Results.*;
 
 public class ForgePoller implements PackageMaterialPoller {
 
-    private static final Logger LOGGER = Logger.getLoggerFor(ForgePoller.class);
+    private static final Log LOG = Log.getLogFor(ForgePoller.class);
     private final Forge.Factory forgeFactory;
     private final ModuleSpec.Factory moduleSpecFactory;
 
@@ -46,8 +43,10 @@ public class ForgePoller implements PackageMaterialPoller {
 
     @Override
     public Result checkConnectionToRepository(RepositoryConfiguration repositoryConfiguration) {
+        LOG.debug("checkConnectionToRepository(%s)", repositoryConfiguration);
+
         Forge forge = forgeFactory.build(repositoryConfiguration);
-        log("Checking connection to forge at %s", forge);
+        LOG.info("Checking connection to forge at %s", forge);
 
         try {
             forge.ping();
@@ -59,9 +58,11 @@ public class ForgePoller implements PackageMaterialPoller {
 
     @Override
     public Result checkConnectionToPackage(PackageConfiguration packageConfiguration, RepositoryConfiguration repositoryConfiguration) {
+        LOG.debug("checkConnectionToPackage(%s, %s)", packageConfiguration, repositoryConfiguration);
+
         ModuleSpec moduleSpec = moduleSpecFactory.build(packageConfiguration);
         Forge forge = forgeFactory.build(repositoryConfiguration);
-        log("Checking connection to module %s in forge at %s", moduleSpec, forge);
+        LOG.info("Checking connection to module %s in forge at %s", moduleSpec, forge);
 
         try {
             forge.ping(moduleSpec);
@@ -73,26 +74,30 @@ public class ForgePoller implements PackageMaterialPoller {
 
     @Override
     public PackageRevision getLatestRevision(PackageConfiguration packageConfiguration, RepositoryConfiguration repositoryConfiguration) {
+        LOG.debug("getLatestRevision(%s, %s)", packageConfiguration, repositoryConfiguration);
+
         ModuleSpec module = moduleSpecFactory.build(packageConfiguration);
         Forge forge = forgeFactory.build(repositoryConfiguration);
-        log("Looking up latest revision of module %s in forge %s", module, forge);
 
+        LOG.info("Looking up latest revision of module %s in forge %s", module, forge);
         try {
             ModuleVersion latestRelease = forge.getLatestVersion(module);
             return latestRelease.toPackageRevision();
         } catch (Forge.ModuleNotFound moduleNotFound) {
-            log("Module %s not found in forge %s: %s", module, forge, moduleNotFound);
+            LOG.info("Module %s not found in forge %s: %s", module, forge, moduleNotFound);
             return null;
         }
     }
 
     @Override
     public PackageRevision latestModificationSince(PackageConfiguration packageConfiguration, RepositoryConfiguration repositoryConfiguration, PackageRevision lastKnownRevision) {
+        LOG.debug("latestModificationSince(%s, %s, %s)", packageConfiguration, repositoryConfiguration, lastKnownRevision);
+
         ModuleSpec module = moduleSpecFactory.build(packageConfiguration);
         Forge forge = forgeFactory.build(repositoryConfiguration);
         Version lastKnownReleaseVersion = Version.of(lastKnownRevision.getRevision());
-        log("Looking up latest release of module %s in forge %s since version %s", module, forge, lastKnownReleaseVersion);
 
+        LOG.info("Looking up latest release of module %s in forge %s since version %s", module, forge, lastKnownReleaseVersion);
         try {
             ModuleVersion latestRelease = forge.getLatestVersion(module);
             if (latestRelease.getVersion().isGreaterThan(lastKnownReleaseVersion)) {
@@ -102,29 +107,8 @@ public class ForgePoller implements PackageMaterialPoller {
                 return null;
             }
         } catch (Forge.ModuleNotFound moduleNotFound) {
-            log("Module %s not found in forge %s: %s", module, forge, moduleNotFound);
+            LOG.info("Module %s not found in forge %s: %s", module, forge, moduleNotFound);
             return null;
         }
-    }
-
-    private Result success(String message, String... args) {
-        return success().withSuccessMessages(String.format(message, args));
-    }
-
-    private Result success() {
-        return new Result();
-    }
-
-    private Result error(Throwable error) {
-        return new Result().withErrorMessages(Exceptions.render(error));
-    }
-
-    protected void log(String message, Object... args) {
-        for (int i = 0; i < args.length; i++) {
-            if (args[i] instanceof Throwable) {
-                args[i] = Exceptions.render((Throwable) args[i]);
-            }
-        }
-        LOGGER.info(String.format(message, args));
     }
 }

@@ -29,11 +29,15 @@ public class Version implements Comparable<Version> {
     private final List<Object> components;
 
     private Version(String string) {
-        if (!string.matches("\\A\\d+([.-][a-zA-Z0-9]+)*\\Z")) {
+        if (!isValid(string)) {
             throw new IllegalArgumentException("Expected a version number matching /\\A\\d+([.-][a-zA-Z0-9]+)*\\Z/, but got \"" + string + "\"");
         }
         this.string = string.replaceAll("-", ".pre.");
         this.components = parse(string);
+    }
+
+    public static boolean isValid(String string) {
+        return string.matches("\\A\\d+([.-][a-zA-Z0-9]+)*\\Z");
     }
 
     public static Version of(String version) {
