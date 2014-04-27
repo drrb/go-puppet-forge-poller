@@ -19,19 +19,19 @@ package io.github.drrb.goforgepoller.forge;
 
 import com.google.api.client.http.*;
 import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.GenericJson;
+import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
 import io.github.drrb.goforgepoller.ForgePollerPluginConfig;
 import io.github.drrb.goforgepoller.forge.api.ModuleMetadata;
 import io.github.drrb.goforgepoller.forge.api.ModuleRelease;
+import io.github.drrb.goforgepoller.forge.api.ModuleReleases;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 public class Forge {
 
@@ -92,16 +92,11 @@ public class Forge {
     }
 
     public ModuleVersion getLatestVersion(ModuleSpec module) throws ModuleNotFound {
-        List<ModuleRelease> releases = getAllVersions(module);
-
-        SortedSet<ModuleRelease> orderedReleases = new TreeSet<>(releases);
-        ModuleRelease upperVersionBound = ModuleRelease.with(module.getUpperVersionBound());
-        ModuleRelease lowerVersionBound = ModuleRelease.with(module.getLowerVersionBound());
+        SortedSet<Version> versions = getAllVersions(module);
 
         try {
-            SortedSet<ModuleRelease> releasesAfterLowerBound = orderedReleases.tailSet(lowerVersionBound);
-            SortedSet<ModuleRelease> releasesInRange = releasesAfterLowerBound.headSet(upperVersionBound);
-            ModuleRelease latestReleaseInRange = releasesInRange.last();
+            SortedSet<Version> versionsInRange = versions.tailSet(module.getLowerVersionBound()).headSet(module.getUpperVersionBound());
+            Version latestReleaseInRange = versionsInRange.last();
 
             return getModuleVersion(module, latestReleaseInRange);
         } catch (NoSuchElementException e) {
@@ -109,16 +104,22 @@ public class Forge {
         }
     }
 
-    private ModuleVersion getModuleVersion(ModuleSpec module, ModuleRelease release) {
-        //TODO: look it up
-        return new ModuleVersion(module.getName(), Version.of(release.getVersion()));
+    private ModuleVersion getModuleVersion(ModuleSpec module, Version version) throws ModuleNotFound {
+        try {
+            ModuleReleases allReleases = get(releasesUrl(module)).parseAs(ModuleReleases.class);
+            Map<Version, ModuleRelease> moduleReleases = allReleases.getReleases(module.getName());
+            ModuleRelease moduleRelease = moduleReleases.get(version);
+            return ModuleVersion.with(module, version, url(moduleRelease.getFile()));
+        } catch (IOException e) {
+            throw new ModuleNotFound(String.format("Failed to look up release information for module '%s'", module), e);
+        }
     }
 
-    private List<ModuleRelease> getAllVersions(ModuleSpec module) throws ModuleNotFound {
+    private SortedSet<Version> getAllVersions(ModuleSpec module) throws ModuleNotFound {
         try {
             HttpResponse response = get(moduleUrl(module));
             ModuleMetadata moduleMetadata = response.parseAs(ModuleMetadata.class);
-            return moduleMetadata.getReleases();
+            return new TreeSet<>(moduleMetadata.getVersions());
         } catch (IOException e) {
             throw new ModuleNotFound(String.format("Failed to list versions of module '%s'", module), e);
         }
@@ -133,16 +134,27 @@ public class Forge {
     }
 
     private URI moduleUrl(ModuleSpec moduleSpec) {
+        return URI.create(url("/%s.json", moduleSpec.getName()));
+    }
+
+    private URI releasesUrl(ModuleSpec moduleSpec) {
+        return URI.create(url("/api/v1/releases.json?module=%s", moduleSpec.getName()));
+    }
+
+    private String url(String pathFormat, Object... args) {
         //TODO: this will fail
-        String url = getBaseUrl() + "/" + moduleSpec.getName() + ".json";
-        return URI.create(url);
+        return getBaseUrl() + String.format(pathFormat, args);
     }
 
     private HttpResponse get(URI url) throws IOException {
         HttpRequestFactory requestFactory = httpTransport.createRequestFactory();
         HttpRequest request = requestFactory.buildGetRequest(new GenericUrl(url));
-        request.setParser(new JsonObjectParser(new JacksonFactory()));
+        request.setParser(getParser());
         return request.execute();
+    }
+
+    private JsonObjectParser getParser() {
+        return new JsonObjectParser(new JacksonFactory());
     }
 
     @Override

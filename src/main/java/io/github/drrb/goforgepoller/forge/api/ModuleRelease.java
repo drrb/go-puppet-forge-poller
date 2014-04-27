@@ -22,23 +22,17 @@ import com.google.api.client.json.GenericJson;
 import com.google.api.client.util.Key;
 import io.github.drrb.goforgepoller.forge.Version;
 
-public class ModuleRelease extends GenericJson implements Comparable<ModuleRelease> {
+public class ModuleRelease extends GenericJson {
+    @Key
+    private String file;
     @Key
     private String version;
 
-    public String getVersion() {
-        return version;
+    public String getFile() {
+        return file;
     }
 
-    public static ModuleRelease with(Version version) {
-        ModuleRelease moduleRelease = new ModuleRelease();
-        moduleRelease.version = version.toString();
-        return moduleRelease;
+    public Version getVersion() {
+        return Version.of(version);
     }
-
-    @Override
-    public int compareTo(ModuleRelease other) {
-        return getVersion().compareTo(other.getVersion());
-    }
-
 }

@@ -17,33 +17,32 @@
  */
 package io.github.drrb.goforgepoller.forge.api;
 
-
 import com.google.api.client.json.GenericJson;
 import com.google.api.client.util.Key;
 import io.github.drrb.goforgepoller.forge.Version;
 
-import java.util.ArrayList;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class ModuleMetadata extends GenericJson {
-    @Key
-    private List<Release> releases;
-
-    public List<Version> getVersions() {
-        List<Version> versions = new ArrayList<>(releases.size());
-        for (Release release : releases) {
-            versions.add(release.getVersion());
+public class ModuleReleases extends GenericJson {
+    public Map<Version, ModuleRelease> getReleases(String module) throws IOException {
+        Object moduleReleaseJsonObject = get(module);
+        GenericJson releaseListJson = new GenericJson();
+        releaseListJson.put("releases", moduleReleaseJsonObject);
+        String releaseListJsonString = getFactory().toString(releaseListJson);
+        ReleaseList releaseList = getFactory().fromString(releaseListJsonString, ReleaseList.class);
+        HashMap<Version, ModuleRelease> releases = new HashMap<>();
+        for (ModuleRelease release : releaseList.releases) {
+            releases.put(release.getVersion(), release);
         }
-        return versions;
+        return releases;
     }
 
-    public static class Release extends GenericJson {
+    public static class ReleaseList extends GenericJson {
         @Key
-        private String version;
-
-        public Version getVersion() {
-            return Version.of(version);
-        }
+        private List<ModuleRelease> releases;
 
     }
 }

@@ -24,18 +24,24 @@ import java.util.Date;
 public class ModuleVersion {
     private final String name;
     private final Version version;
+    private final String url;
 
-    public ModuleVersion(String name, Version version) {
+    public ModuleVersion(String name, Version version, String url) {
         this.name = name;
         this.version = version;
+        this.url = url;
     }
 
-    public static ModuleVersion with(ModuleSpec moduleSpec, Version version) {
-        return new ModuleVersion(moduleSpec.getName(), version);
+    public static ModuleVersion with(ModuleSpec moduleSpec, Version version, String url) {
+        return new ModuleVersion(moduleSpec.getName(), version, url);
     }
 
     public Version getVersion() {
         return version;
+    }
+
+    public String getUrl() {
+        return url;
     }
 
     public PackageRevision toPackageRevision() {

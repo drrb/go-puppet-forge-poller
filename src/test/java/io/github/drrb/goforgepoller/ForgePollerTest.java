@@ -62,7 +62,7 @@ public class ForgePollerTest {
 
         repoConfig = new RepositoryConfiguration();
         packageConfig = new PackageConfiguration();
-        moduleVersion = new ModuleVersion("", Version.of("1.0.0"));
+        moduleVersion = new ModuleVersion("", Version.of("1.0.0"), null);
 
         when(forgeFactory.build(repoConfig)).thenReturn(forge);
         when(moduleSpecFactory.build(packageConfig)).thenReturn(moduleSpec);

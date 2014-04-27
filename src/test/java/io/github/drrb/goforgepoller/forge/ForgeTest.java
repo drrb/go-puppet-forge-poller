@@ -75,33 +75,34 @@ public class ForgeTest {
 
     @Test
     public void shouldDoNothingIfPingReturns200() throws Exception {
-        responses.put("http://forge.example.com/forge", new MockLowLevelHttpResponse().setStatusCode(200));
+        responses.put("http://forge.example.com/forge", response(200));
         forge.ping();
     }
 
     @Test(expected = Forge.PingFailure.class)
     public void shouldRaiseExceptionIfPingReturnsAnError() throws Exception {
-        responses.put("http://forge.example.com/forge", new MockLowLevelHttpResponse().setStatusCode(404));
+        responses.put("http://forge.example.com/forge", response(404));
         forge.ping();
     }
 
     @Test
     public void shouldDoNothingIfPackagePingReturns200() throws Exception {
-        responses.put("http://forge.example.com/forge/puppetlabs/apache.json", new MockLowLevelHttpResponse().setStatusCode(200));
+        responses.put("http://forge.example.com/forge/puppetlabs/apache.json", response(200));
         forge.ping(ModuleSpec.of("puppetlabs/apache"));
     }
 
     @Test(expected = Forge.PingFailure.class)
     public void shouldRaiseExceptionIfPackagePingReturnsAnError() throws Exception {
-        responses.put("http://forge.example.com/forge/puppetlabs/apache.json", new MockLowLevelHttpResponse().setStatusCode(404));
+        responses.put("http://forge.example.com/forge/puppetlabs/apache.json", response(404));
         forge.ping(ModuleSpec.of("puppetlabs/apache"));
     }
 
     @Test
     public void shouldReturnLatestRelease() throws Exception {
-        String metadata = "{\"releases\":[{\"version\":\"1.0.1\"},{\"version\":\"1.0.10\"},{\"version\":\"0.11.0\"}]}";
-        MockLowLevelHttpResponse response = new MockLowLevelHttpResponse().setStatusCode(200).setContent(metadata);
-        responses.put("http://forge.example.com/forge/puppetlabs/apache.json", response);
+        responses.put("http://forge.example.com/forge/puppetlabs/apache.json",
+                response(200).setContent("{\"releases\":[{\"version\":\"1.0.1\"},{\"version\":\"1.0.10\"},{\"version\":\"0.11.0\"}]}"));
+        responses.put("http://forge.example.com/forge/api/v1/releases.json?module=puppetlabs/apache",
+                response(200).setContent("{\"puppetlabs/apache\":[{\"version\":\"1.0.1\"},{\"version\":\"0.11.0\"},{\"version\":\"1.0.10\", \"file\": \"/modules/puppetlabs/apache/1.0.0.tar.gz\"}]}"));
 
         ModuleVersion latestVersion = forge.getLatestVersion(ModuleSpec.of("puppetlabs/apache"));
         assertThat(latestVersion.getVersion(), is(Version.of("1.0.10")));
@@ -109,28 +110,41 @@ public class ForgeTest {
 
     @Test
     public void shouldReturnLatestReleaseBeforeUpperBound() throws Exception {
-        String metadata = "{\"releases\":[{\"version\":\"1.0.1\"},{\"version\":\"1.0.10\"},{\"version\":\"0.11.0\"}]}";
-        MockLowLevelHttpResponse response = new MockLowLevelHttpResponse().setStatusCode(200).setContent(metadata);
-        responses.put("http://forge.example.com/forge/puppetlabs/apache.json", response);
+        responses.put("http://forge.example.com/forge/puppetlabs/apache.json",
+                response(200).setContent("{\"releases\":[{\"version\":\"1.0.1\"},{\"version\":\"1.0.10\"},{\"version\":\"0.11.0\"}]}"));
+        responses.put("http://forge.example.com/forge/api/v1/releases.json?module=puppetlabs/apache",
+                response(200).setContent("{\"puppetlabs/apache\":[{\"version\":\"1.0.1\"},{\"version\":\"1.0.10\"},{\"version\":\"0.11.0\", \"file\": \"/modules/puppetlabs/apache/0.11.0.tar.gz\"}]}"));
 
         ModuleVersion latestVersion = forge.getLatestVersion(ModuleSpec.of("puppetlabs/apache").withVersionLessThan(Version.of("1.0.0")));
         assertThat(latestVersion.getVersion(), is(Version.of("0.11.0")));
+        assertThat(latestVersion.getUrl(), is("http://forge.example.com/forge/modules/puppetlabs/apache/0.11.0.tar.gz"));
     }
 
     @Test(expected = Forge.ModuleNotFound.class)
     public void shouldRaiseExceptionIfLatestReleaseIsBeforeLowerBound() throws Exception {
-        String metadata = "{\"releases\":[{\"version\":\"1.0.1\"},{\"version\":\"1.0.10\"},{\"version\":\"0.11.0\"}]}";
-        MockLowLevelHttpResponse response = new MockLowLevelHttpResponse().setStatusCode(200).setContent(metadata);
-        responses.put("http://forge.example.com/forge/puppetlabs/apache.json", response);
+        responses.put("http://forge.example.com/forge/puppetlabs/apache.json",
+                response(200).setContent("{\"releases\":[{\"version\":\"1.0.1\"},{\"version\":\"1.0.10\"},{\"version\":\"0.11.0\"}]}"));
 
         forge.getLatestVersion(ModuleSpec.of("puppetlabs/apache").withVersionGreaterThanOrEqualTo(Version.of("1.1.0")));
     }
 
     @Test(expected = Forge.ModuleNotFound.class)
     public void shouldRaiseExceptionIfModuleNotFound() throws Exception {
-        MockLowLevelHttpResponse response = new MockLowLevelHttpResponse().setStatusCode(404);
-        responses.put("http://forge.example.com/forge/puppetlabs/apache.json", response);
+        responses.put("http://forge.example.com/forge/puppetlabs/apache.json", response(404));
 
         forge.getLatestVersion(ModuleSpec.of("puppetlabs/apache"));
+    }
+
+    @Test(expected = Forge.ModuleNotFound.class)
+    public void shouldRaiseExceptionIfModuleReleaseDetailsNotAvailable() throws Exception {
+        responses.put("http://forge.example.com/forge/puppetlabs/apache.json",
+                response(200).setContent("{\"releases\":[{\"version\":\"1.0.1\"},{\"version\":\"1.0.10\"},{\"version\":\"0.11.0\"}]}"));
+        responses.put("http://forge.example.com/forge/api/v1/releases.json?module=puppetlabs/apache", response(500));
+
+        forge.getLatestVersion(ModuleSpec.of("puppetlabs/apache"));
+    }
+
+    private MockLowLevelHttpResponse response(int statusCode) {
+        return new MockLowLevelHttpResponse().setStatusCode(statusCode);
     }
 }
