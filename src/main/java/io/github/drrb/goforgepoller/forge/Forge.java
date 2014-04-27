@@ -19,8 +19,6 @@ package io.github.drrb.goforgepoller.forge;
 
 import com.google.api.client.http.*;
 import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.GenericJson;
-import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
@@ -31,7 +29,10 @@ import io.github.drrb.goforgepoller.forge.api.ModuleReleases;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.*;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class Forge {
 
