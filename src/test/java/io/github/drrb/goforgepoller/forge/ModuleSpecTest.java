@@ -17,11 +17,11 @@
  */
 package io.github.drrb.goforgepoller.forge;
 
-import com.thoughtworks.go.plugin.api.config.Property;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration;
-import io.github.drrb.goforgepoller.ForgePollerPluginConfig;
 import org.junit.Test;
 
+import static io.github.drrb.goforgepoller.ForgePollerPluginConfig.*;
+import static io.github.drrb.goforgepoller.util.PropertyBuilder.property;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -30,9 +30,9 @@ public class ModuleSpecTest {
     @Test
     public void factoryCreatesInstance() throws Exception {
         PackageConfiguration packageConfig = new PackageConfiguration();
-        packageConfig.add(new Property(ForgePollerPluginConfig.MODULE_NAME).withDefault("puppetlabs/apache"));
-        packageConfig.add(new Property(ForgePollerPluginConfig.LOWER_VERSION_BOUND_INCLUSIVE).withDefault("1.0.0"));
-        packageConfig.add(new Property(ForgePollerPluginConfig.UPPER_VERSION_BOUND_EXCLUSIVE).withDefault("1.1.0"));
+        packageConfig.add(property(MODULE_NAME, "puppetlabs/apache"));
+        packageConfig.add(property(LOWER_VERSION_BOUND_INCLUSIVE, "1.0.0"));
+        packageConfig.add(property(UPPER_VERSION_BOUND_EXCLUSIVE, "1.1.0"));
 
         ModuleSpec moduleSpec = new ModuleSpec.Factory().build(packageConfig);
 
@@ -45,9 +45,9 @@ public class ModuleSpecTest {
     //TODO: does this actually happen?
     public void factoryIgnoresNullVersionNumbers() throws Exception {
         PackageConfiguration packageConfig = new PackageConfiguration();
-        packageConfig.add(new Property(ForgePollerPluginConfig.MODULE_NAME).withDefault("puppetlabs/apache"));
-        packageConfig.add(new Property(ForgePollerPluginConfig.LOWER_VERSION_BOUND_INCLUSIVE).withDefault(null));
-        packageConfig.add(new Property(ForgePollerPluginConfig.UPPER_VERSION_BOUND_EXCLUSIVE).withDefault(null));
+        packageConfig.add(property(MODULE_NAME, "puppetlabs/apache"));
+        packageConfig.add(property(LOWER_VERSION_BOUND_INCLUSIVE, null));
+        packageConfig.add(property(UPPER_VERSION_BOUND_EXCLUSIVE, null));
 
         ModuleSpec moduleSpec = new ModuleSpec.Factory().build(packageConfig);
 
@@ -61,7 +61,7 @@ public class ModuleSpecTest {
     @Test
     public void factoryIgnoresMissingVersionNumbers() throws Exception {
         PackageConfiguration packageConfig = new PackageConfiguration();
-        packageConfig.add(new Property(ForgePollerPluginConfig.MODULE_NAME).withDefault("puppetlabs/apache"));
+        packageConfig.add(property(MODULE_NAME, "puppetlabs/apache"));
 
         ModuleSpec moduleSpec = new ModuleSpec.Factory().build(packageConfig);
 
@@ -72,9 +72,9 @@ public class ModuleSpecTest {
     @Test
     public void factoryIgnoresEmptyVersionNumbers() throws Exception {
         PackageConfiguration packageConfig = new PackageConfiguration();
-        packageConfig.add(new Property(ForgePollerPluginConfig.MODULE_NAME).withDefault("puppetlabs/apache"));
-        packageConfig.add(new Property(ForgePollerPluginConfig.LOWER_VERSION_BOUND_INCLUSIVE).withDefault(" "));
-        packageConfig.add(new Property(ForgePollerPluginConfig.UPPER_VERSION_BOUND_EXCLUSIVE).withDefault("  "));
+        packageConfig.add(property(MODULE_NAME, "puppetlabs/apache"));
+        packageConfig.add(property(LOWER_VERSION_BOUND_INCLUSIVE, " "));
+        packageConfig.add(property(UPPER_VERSION_BOUND_EXCLUSIVE, "  "));
 
         ModuleSpec moduleSpec = new ModuleSpec.Factory().build(packageConfig);
 

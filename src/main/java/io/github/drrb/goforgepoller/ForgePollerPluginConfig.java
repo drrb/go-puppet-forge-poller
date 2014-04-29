@@ -29,10 +29,11 @@ import io.github.drrb.goforgepoller.util.SaferConfiguration;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import static io.github.drrb.goforgepoller.util.DisplayedProperty.property;
+import static io.github.drrb.goforgepoller.util.PropertyBuilder.property;
 
 public class ForgePollerPluginConfig implements PackageMaterialConfiguration {
     private static final Log LOG = Log.getLogFor(ForgePollerPluginConfig.class);
+
     public static final String FORGE_URL = "FORGE_URL";
 
     public static final String MODULE_NAME = "MODULE_NAME";
@@ -49,19 +50,20 @@ public class ForgePollerPluginConfig implements PackageMaterialConfiguration {
         PackageConfiguration packageConfig = new PackageConfiguration();
         packageConfig.add(property(MODULE_NAME)
                 .withDisplayName("Module Name")
+                .withPartOfIdentity(true)
                 .withDisplayOrder(0)
                 .build());
         packageConfig.add(property(LOWER_VERSION_BOUND_INCLUSIVE)
                 .withRequired(false)
                 .withDisplayName("Version to poll >=")
+                .withPartOfIdentity(false)
                 .withDisplayOrder(1)
-                .withPartOfIdentity(true)
                 .build());
         packageConfig.add(property(UPPER_VERSION_BOUND_EXCLUSIVE)
                 .withRequired(false)
                 .withDisplayName("Version to poll <")
+                .withPartOfIdentity(false)
                 .withDisplayOrder(2)
-                .withPartOfIdentity(true)
                 .build());
         return packageConfig;
     }

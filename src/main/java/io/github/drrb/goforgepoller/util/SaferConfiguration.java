@@ -17,8 +17,8 @@
  */
 package io.github.drrb.goforgepoller.util;
 
-import com.thoughtworks.go.plugin.api.config.Configuration;
-import com.thoughtworks.go.plugin.api.config.Property;
+import com.thoughtworks.go.plugin.api.material.packagerepository.Configuration;
+import com.thoughtworks.go.plugin.api.material.packagerepository.Property;
 
 import javax.annotation.Nonnull;
 

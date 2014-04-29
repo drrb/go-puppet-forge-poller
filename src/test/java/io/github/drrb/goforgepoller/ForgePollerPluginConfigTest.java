@@ -17,15 +17,15 @@
  */
 package io.github.drrb.goforgepoller;
 
-import com.thoughtworks.go.plugin.api.config.Property;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration;
 import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
 import com.thoughtworks.go.plugin.api.response.validation.ValidationResult;
 import org.junit.Before;
 import org.junit.Test;
 
-import static com.thoughtworks.go.plugin.api.config.Property.DISPLAY_NAME;
+import static com.thoughtworks.go.plugin.api.material.packagerepository.Property.DISPLAY_NAME;
 import static io.github.drrb.goforgepoller.ForgePollerPluginConfig.*;
+import static io.github.drrb.goforgepoller.util.PropertyBuilder.property;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -53,7 +53,7 @@ public class ForgePollerPluginConfigTest {
     @Test
     public void shouldAcceptRepoConfigIfForgeUrlSpecified() throws Exception {
         RepositoryConfiguration repoConfig = new RepositoryConfiguration();
-        repoConfig.add(new Property(FORGE_URL).withDefault("http://forge.puppetlabs.com"));
+        repoConfig.add(property(FORGE_URL, "http://forge.puppetlabs.com"));
 
         ValidationResult validationResult = config.isRepositoryConfigurationValid(repoConfig);
 
@@ -63,7 +63,7 @@ public class ForgePollerPluginConfigTest {
     @Test
     public void shouldRejectRepoConfigIfUrlIsEmpty() throws Exception {
         RepositoryConfiguration repoConfig = new RepositoryConfiguration();
-        repoConfig.add(new Property(FORGE_URL).withDefault("  "));
+        repoConfig.add(property(FORGE_URL, "  "));
 
         ValidationResult validationResult = config.isRepositoryConfigurationValid(repoConfig);
 
@@ -74,7 +74,7 @@ public class ForgePollerPluginConfigTest {
     @Test
     public void shouldRejectRepoConfigIfUrlIsNull() throws Exception {
         RepositoryConfiguration repoConfig = new RepositoryConfiguration();
-        repoConfig.add(new Property(FORGE_URL).withDefault(null));
+        repoConfig.add(property(FORGE_URL, null));
 
         ValidationResult validationResult = config.isRepositoryConfigurationValid(repoConfig);
 
@@ -85,7 +85,7 @@ public class ForgePollerPluginConfigTest {
     @Test
     public void shouldAcceptRepoConfigIfForgeUrlIsInvalid() throws Exception {
         RepositoryConfiguration repoConfig = new RepositoryConfiguration();
-        repoConfig.add(new Property(FORGE_URL).withDefault("x"));
+        repoConfig.add(property(FORGE_URL, "x"));
 
         ValidationResult validationResult = config.isRepositoryConfigurationValid(repoConfig);
 
@@ -96,7 +96,7 @@ public class ForgePollerPluginConfigTest {
     @Test
     public void shouldAcceptRepoConfigIfForgeUrlIsNonHttp() throws Exception {
         RepositoryConfiguration repoConfig = new RepositoryConfiguration();
-        repoConfig.add(new Property(FORGE_URL).withDefault("ftp://example.com"));
+        repoConfig.add(property(FORGE_URL, "ftp://example.com"));
 
         ValidationResult validationResult = config.isRepositoryConfigurationValid(repoConfig);
 
@@ -107,7 +107,7 @@ public class ForgePollerPluginConfigTest {
     @Test
     public void shouldAcceptPackageConfigIfNoVersionsSpecified() throws Exception {
         PackageConfiguration packageConfig = new PackageConfiguration();
-        packageConfig.add(new Property(MODULE_NAME).withDefault("puppetlabs/apache"));
+        packageConfig.add(property(MODULE_NAME, "puppetlabs/apache"));
 
         ValidationResult validationResult = config.isPackageConfigurationValid(packageConfig, new RepositoryConfiguration());
 
@@ -117,7 +117,7 @@ public class ForgePollerPluginConfigTest {
     @Test
     public void shouldRejectPackageConfigIfModuleNameIsEmpty() throws Exception {
         PackageConfiguration packageConfig = new PackageConfiguration();
-        packageConfig.add(new Property(MODULE_NAME).withDefault("  "));
+        packageConfig.add(property(MODULE_NAME, "  "));
 
         ValidationResult validationResult = config.isPackageConfigurationValid(packageConfig, new RepositoryConfiguration());
 
@@ -128,7 +128,7 @@ public class ForgePollerPluginConfigTest {
     @Test
     public void shouldRejectPackageConfigIfModuleNameIsNull() throws Exception {
         PackageConfiguration packageConfig = new PackageConfiguration();
-        packageConfig.add(new Property(MODULE_NAME).withDefault(null));
+        packageConfig.add(property(MODULE_NAME, null));
 
         ValidationResult validationResult = config.isPackageConfigurationValid(packageConfig, new RepositoryConfiguration());
 
@@ -139,7 +139,7 @@ public class ForgePollerPluginConfigTest {
     @Test
     public void shouldRejectPackageConfigIfModuleNameInWrongFormat() throws Exception {
         PackageConfiguration packageConfig = new PackageConfiguration();
-        packageConfig.add(new Property(MODULE_NAME).withDefault("apache"));
+        packageConfig.add(property(MODULE_NAME, "apache"));
 
         ValidationResult validationResult = config.isPackageConfigurationValid(packageConfig, new RepositoryConfiguration());
 
@@ -150,8 +150,8 @@ public class ForgePollerPluginConfigTest {
     @Test
     public void shouldRejectPackageConfigIfLowerVersionBoundInWrongFormat() throws Exception {
         PackageConfiguration packageConfig = new PackageConfiguration();
-        packageConfig.add(new Property(MODULE_NAME).withDefault("puppetlabs/apache"));
-        packageConfig.add(new Property(LOWER_VERSION_BOUND_INCLUSIVE).withDefault("XX Bad format XX"));
+        packageConfig.add(property(MODULE_NAME, "puppetlabs/apache"));
+        packageConfig.add(property(LOWER_VERSION_BOUND_INCLUSIVE, "XX Bad format XX"));
 
         ValidationResult validationResult = config.isPackageConfigurationValid(packageConfig, new RepositoryConfiguration());
 
@@ -162,12 +162,13 @@ public class ForgePollerPluginConfigTest {
     @Test
     public void shouldRejectPackageConfigIfUpperVersionBoundInWrongFormat() throws Exception {
         PackageConfiguration packageConfig = new PackageConfiguration();
-        packageConfig.add(new Property(MODULE_NAME).withDefault("puppetlabs/apache"));
-        packageConfig.add(new Property(UPPER_VERSION_BOUND_EXCLUSIVE).withDefault("XX Bad format XX"));
+        packageConfig.add(property(MODULE_NAME, "puppetlabs/apache"));
+        packageConfig.add(property(UPPER_VERSION_BOUND_EXCLUSIVE, "XX Bad format XX"));
 
         ValidationResult validationResult = config.isPackageConfigurationValid(packageConfig, new RepositoryConfiguration());
 
         assertThat(validationResult.isSuccessful(), is(false));
         assertThat(validationResult.getMessages(), hasItem(equalTo("Version to poll < should be a version number")));
     }
+
 }

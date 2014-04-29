@@ -17,36 +17,44 @@
  */
 package io.github.drrb.goforgepoller.util;
 
-import com.thoughtworks.go.plugin.api.config.Property;
+import com.thoughtworks.go.plugin.api.material.packagerepository.Property;
 
-public class DisplayedProperty {
+public class PropertyBuilder {
 
     private Property property;
 
-    public static DisplayedProperty property(String name) {
-        return new DisplayedProperty(name);
+    public static PropertyBuilder property(String name) {
+        return new PropertyBuilder(name);
     }
 
-    public DisplayedProperty(String name) {
+    public PropertyBuilder(String name) {
         this.property = new Property(name);
     }
 
-    public DisplayedProperty withDisplayName(String displayName) {
+    public PropertyBuilder(String name, String value) {
+        this.property = new Property(name, value);
+    }
+
+    public static Property property(String name, String value) {
+        return new PropertyBuilder(name, value).build();
+    }
+
+    public PropertyBuilder withDisplayName(String displayName) {
         property = property.with(Property.DISPLAY_NAME, displayName);
         return this;
     }
 
-    public DisplayedProperty withDisplayOrder(int displayOrder) {
+    public PropertyBuilder withDisplayOrder(int displayOrder) {
         property = property.with(Property.DISPLAY_ORDER, displayOrder);
         return this;
     }
 
-    public DisplayedProperty withRequired(boolean required) {
+    public PropertyBuilder withRequired(boolean required) {
         property = property.with(Property.REQUIRED, required);
         return this;
     }
 
-    public DisplayedProperty withPartOfIdentity(boolean partOfIdentity) {
+    public PropertyBuilder withPartOfIdentity(boolean partOfIdentity) {
         property = property.with(Property.PART_OF_IDENTITY, partOfIdentity);
         return this;
     }
