@@ -21,6 +21,9 @@ import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Date;
+
+import static io.github.drrb.test.BetweenMatcher.Builder.between;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -70,9 +73,12 @@ public class ModuleVersionTest {
     }
 
     @Test
-    public void shouldSetDateToNull() throws Exception {
+    public void shouldSetDateToNow() throws Exception {
+        Date testStart = new Date();
+        
         PackageRevision packageRevision = moduleVersion.toPackageRevision();
 
-        assertThat(packageRevision.getTimestamp(), is(nullValue()));
+        Date testEnd = new Date();
+        assertThat(packageRevision.getTimestamp(), is(between(testStart).and(testEnd)));
     }
 }
