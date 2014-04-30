@@ -25,11 +25,15 @@ import io.github.drrb.goforgepoller.forge.Forge;
 import io.github.drrb.goforgepoller.forge.ModuleSpec;
 import io.github.drrb.goforgepoller.forge.ModuleVersion;
 import io.github.drrb.goforgepoller.forge.Version;
+import io.github.drrb.test.NoLogging;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import java.net.URL;
 
 import static io.github.drrb.goforgepoller.forge.Forge.PingFailure;
 import static org.hamcrest.CoreMatchers.*;
@@ -40,6 +44,9 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ForgePollerTest {
+
+    @Rule
+    public final NoLogging noLogging = NoLogging.rule();
 
     private ForgePoller poller;
 
@@ -62,7 +69,7 @@ public class ForgePollerTest {
 
         repoConfig = new RepositoryConfiguration();
         packageConfig = new PackageConfiguration();
-        moduleVersion = new ModuleVersion("", Version.of("1.0.0"), "http://forge.example.com/puppetlabs-apache-1.0.0.tar.gz");
+        moduleVersion = new ModuleVersion("", Version.of("1.0.0"), new URL("http://forge.example.com/puppetlabs-apache-1.0.0.tar.gz"));
 
         when(forgeFactory.build(repoConfig)).thenReturn(forge);
         when(moduleSpecFactory.build(packageConfig)).thenReturn(moduleSpec);

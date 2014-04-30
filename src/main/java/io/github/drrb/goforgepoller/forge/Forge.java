@@ -28,7 +28,11 @@ import io.github.drrb.goforgepoller.forge.api.ModuleRelease;
 import io.github.drrb.goforgepoller.forge.api.ModuleReleases;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.SortedSet;
@@ -39,7 +43,11 @@ public class Forge {
     public static class Factory {
         public Forge build(RepositoryConfiguration repoConfig) {
             String baseUrl = repoConfig.get(ForgePollerPluginConfig.FORGE_URL).getValue();
-            return new Forge(baseUrl, new NetHttpTransport());
+            try {
+                return new Forge(new URL(baseUrl), new NetHttpTransport());
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -64,16 +72,16 @@ public class Forge {
         }
     }
 
-    private final String baseUrl;
+    private final URL baseUrl;
     private final HttpTransport httpTransport;
 
-    public Forge(String baseUrl, HttpTransport httpTransport) {
+    public Forge(URL baseUrl, HttpTransport httpTransport) {
         this.baseUrl = baseUrl;
         this.httpTransport = httpTransport;
     }
 
-    public URI getBaseUrl() {
-        return URI.create(baseUrl);
+    public URL getBaseUrl() {
+        return baseUrl;
     }
 
     public void ping() throws PingFailure {
@@ -126,7 +134,7 @@ public class Forge {
         }
     }
 
-    private void ping(URI url) throws PingFailure {
+    private void ping(URL url) throws PingFailure {
         try {
             get(url);
         } catch (IOException e) {
@@ -134,20 +142,23 @@ public class Forge {
         }
     }
 
-    private URI moduleUrl(ModuleSpec moduleSpec) {
-        return URI.create(url("/%s.json", moduleSpec.getName()));
+    private URL moduleUrl(ModuleSpec moduleSpec) {
+        return url("/%s.json", moduleSpec.getName());
     }
 
-    private URI releasesUrl(ModuleSpec moduleSpec) {
-        return URI.create(url("/api/v1/releases.json?module=%s", moduleSpec.getName()));
+    private URL releasesUrl(ModuleSpec moduleSpec) {
+        return url("/api/v1/releases.json?module=%s", moduleSpec.getName());
     }
 
-    private String url(String pathFormat, Object... args) {
-        //TODO: this will fail
-        return getBaseUrl() + String.format(pathFormat, args);
+    private URL url(String pathFormat, Object... args) {
+        try {
+            return new URL(getBaseUrl(), Paths.get(getBaseUrl().getPath(), String.format(pathFormat, args)).toString());
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    private HttpResponse get(URI url) throws IOException {
+    private HttpResponse get(URL url) throws IOException {
         HttpRequestFactory requestFactory = httpTransport.createRequestFactory();
         HttpRequest request = requestFactory.buildGetRequest(new GenericUrl(url));
         request.setParser(getParser());
@@ -160,6 +171,6 @@ public class Forge {
 
     @Override
     public String toString() {
-        return baseUrl;
+        return baseUrl.toString();
     }
 }

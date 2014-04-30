@@ -21,6 +21,7 @@ import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision
 import org.junit.Before;
 import org.junit.Test;
 
+import java.net.URL;
 import java.util.Date;
 
 import static io.github.drrb.test.BetweenMatcher.Builder.between;
@@ -33,7 +34,7 @@ public class ModuleVersionTest {
 
     @Before
     public void setUp() throws Exception {
-        moduleVersion = new ModuleVersion("puppetlabs/apache", Version.of("1.0.0"), "http://forge.example.com/puppetlabs-apache-1.0.0.tar.gz");
+        moduleVersion = new ModuleVersion("puppetlabs/apache", Version.of("1.0.0"), new URL("http://forge.example.com/puppetlabs-apache-1.0.0.tar.gz"));
     }
 
     @Test

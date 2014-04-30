@@ -21,8 +21,24 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
+import java.net.URL;
+
 public class Matchers {
     private Matchers() {
+    }
+
+    public static Matcher<URL> url(final String url) {
+        return new TypeSafeMatcher<URL>() {
+            @Override
+            protected boolean matchesSafely(URL item) {
+                return item.toString().equals(url);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("URL ").appendText(url);
+            }
+        };
     }
 
     public static <T extends Comparable<T>> Matcher<T> greaterThan(final T other) {

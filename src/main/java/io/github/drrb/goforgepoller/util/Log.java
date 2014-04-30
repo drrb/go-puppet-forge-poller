@@ -21,30 +21,69 @@ import com.thoughtworks.go.plugin.api.logging.Logger;
 import com.thoughtworks.xstream.XStream;
 
 public class Log {
+    private static final ThreadLocal<Boolean> globallyEnabled = new ThreadLocal<Boolean>() {
+        @Override
+        protected Boolean initialValue() {
+            return true;
+        }
+    };
+
+    public static void disable() {
+        globallyEnabled.set(false);
+    }
+
+    public static void enable() {
+        globallyEnabled.set(true);
+    }
+
+    private static Boolean isEnabled() {
+        return globallyEnabled.get();
+    }
+
     public static Log getLogFor(Class<?> type) {
-        return new Log(type);
+        return new Log(Logger.getLoggerFor(type));
     }
 
     private final Logger logger;
 
-    public Log(Class<?> type) {
-        this.logger = Logger.getLoggerFor(type);
+    public enum Level {
+        DEBUG, INFO
     }
 
-    public void debug(String message, Object... args) {
+    public Log(Logger logger) {
+        this.logger = logger;
+    }
+
+    public void debug(String format, Object... args) {
         for (int i = 0; i < args.length; i++) {
             XStream xstream = new XStream();
             args[i] = xstream.toXML(args[i]);
         }
-        logger.debug(String.format(message, args));
+        if (isEnabled()) {
+            logFormatted(Level.DEBUG, format, args);
+        }
     }
 
-    public void info(String message, Object... args) {
+    public void info(String format, Object... args) {
         for (int i = 0; i < args.length; i++) {
             if (args[i] instanceof Throwable) {
                 args[i] = Exceptions.render((Throwable) args[i]);
             }
         }
-        logger.info(String.format(message, args));
+        if (isEnabled()) {
+            logFormatted(Level.INFO, format, args);
+        }
+    }
+
+    private void logFormatted(Level level, String format, Object... args) {
+        String message = String.format(format, args);
+        log(level, message);
+    }
+
+    protected void log(Level level, String message) {
+        switch (level) {
+            case DEBUG: logger.debug(message); break;
+            case INFO: logger.info(message); break;
+        }
     }
 }

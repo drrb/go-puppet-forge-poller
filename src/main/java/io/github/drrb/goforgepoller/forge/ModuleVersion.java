@@ -19,20 +19,21 @@ package io.github.drrb.goforgepoller.forge;
 
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
 
+import java.net.URL;
 import java.util.Date;
 
 public class ModuleVersion {
     private final String name;
     private final Version version;
-    private final String url;
+    private final URL url;
 
-    public ModuleVersion(String name, Version version, String url) {
+    public ModuleVersion(String name, Version version, URL url) {
         this.name = name;
         this.version = version;
         this.url = url;
     }
 
-    public static ModuleVersion with(ModuleSpec moduleSpec, Version version, String url) {
+    public static ModuleVersion with(ModuleSpec moduleSpec, Version version, URL url) {
         return new ModuleVersion(moduleSpec.getName(), version, url);
     }
 
@@ -40,13 +41,13 @@ public class ModuleVersion {
         return version;
     }
 
-    public String getUrl() {
+    public URL getUrl() {
         return url;
     }
 
     public PackageRevision toPackageRevision() {
-        PackageRevision revision = new PackageRevision(version.toString(), /* TODO: How do the other ones get away with using null here? */ new Date(), name.replaceAll("^(.*)/.*$", "$1"), null, getUrl());
-        revision.addData("LOCATION", getUrl());
+        PackageRevision revision = new PackageRevision(version.toString(), new Date(), name.replaceAll("^(.*)/.*$", "$1"), null, getUrl().toString());
+        revision.addData("LOCATION", getUrl().toString());
         revision.addData("VERSION", getVersion().toString());
         return revision;
     }

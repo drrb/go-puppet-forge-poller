@@ -25,18 +25,24 @@ import com.google.api.client.testing.http.MockLowLevelHttpResponse;
 import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
 import io.github.drrb.goforgepoller.ForgePollerPluginConfig;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
 import static io.github.drrb.goforgepoller.util.PropertyBuilder.property;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
+import static io.github.drrb.test.Matchers.url;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 public class ForgeTest {
+    @Rule
+    public final ExpectedException exception = ExpectedException.none();
+
     private Forge forge;
     private MockHttpTransport httpTransport;
     private Map<String, MockLowLevelHttpResponse> responses = new HashMap<>();
@@ -56,7 +62,7 @@ public class ForgeTest {
             }
         };
 
-        forge = new Forge("http://forge.example.com/forge", httpTransport);
+        forge = new Forge(new URL("http://forge.example.com/forge"), httpTransport);
     }
 
     @Test
@@ -67,10 +73,13 @@ public class ForgeTest {
         assertThat(forge.getBaseUrl().toString(), is("http://example.com"));
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldRaiseExceptionIfUrlIsInvalid() throws Exception {
-        forge = new Forge("x", httpTransport);
-        forge.ping();
+        RepositoryConfiguration repoConfig = new RepositoryConfiguration();
+        repoConfig.add(property(ForgePollerPluginConfig.FORGE_URL, "x"));
+
+        exception.expectMessage(containsString("no protocol"));
+        forge = new Forge.Factory().build(repoConfig);
     }
 
     @Test
@@ -117,31 +126,43 @@ public class ForgeTest {
 
         ModuleVersion latestVersion = forge.getLatestVersion(ModuleSpec.of("puppetlabs/apache").withVersionLessThan(Version.of("1.0.0")));
         assertThat(latestVersion.getVersion(), is(Version.of("0.11.0")));
-        assertThat(latestVersion.getUrl(), is("http://forge.example.com/forge/modules/puppetlabs/apache/0.11.0.tar.gz"));
+        assertThat(latestVersion.getUrl(), is(url("http://forge.example.com/forge/modules/puppetlabs/apache/0.11.0.tar.gz")));
     }
 
-    @Test(expected = Forge.ModuleNotFound.class)
+    @Test
     public void shouldRaiseExceptionIfLatestReleaseIsBeforeLowerBound() throws Exception {
         responses.put("http://forge.example.com/forge/puppetlabs/apache.json",
                 response(200).setContent("{\"releases\":[{\"version\":\"1.0.1\"},{\"version\":\"1.0.10\"},{\"version\":\"0.11.0\"}]}"));
 
+        exception.expect(Forge.ModuleNotFound.class);
         forge.getLatestVersion(ModuleSpec.of("puppetlabs/apache").withVersionGreaterThanOrEqualTo(Version.of("1.1.0")));
     }
 
-    @Test(expected = Forge.ModuleNotFound.class)
+    @Test
     public void shouldRaiseExceptionIfModuleNotFound() throws Exception {
         responses.put("http://forge.example.com/forge/puppetlabs/apache.json", response(404));
 
+        exception.expect(Forge.ModuleNotFound.class);
         forge.getLatestVersion(ModuleSpec.of("puppetlabs/apache"));
     }
 
-    @Test(expected = Forge.ModuleNotFound.class)
+    @Test
     public void shouldRaiseExceptionIfModuleReleaseDetailsNotAvailable() throws Exception {
         responses.put("http://forge.example.com/forge/puppetlabs/apache.json",
                 response(200).setContent("{\"releases\":[{\"version\":\"1.0.1\"},{\"version\":\"1.0.10\"},{\"version\":\"0.11.0\"}]}"));
         responses.put("http://forge.example.com/forge/api/v1/releases.json?module=puppetlabs/apache", response(500));
 
+        exception.expect(Forge.ModuleNotFound.class);
         forge.getLatestVersion(ModuleSpec.of("puppetlabs/apache"));
+    }
+
+    @Test
+    public void shouldCopeWithTrailingSlashOnUrl() throws Exception {
+        forge = new Forge(new URL("http://forge.example.com/forge/"), httpTransport);
+
+        responses.put("http://forge.example.com/forge/puppetlabs/apache.json", response(200));
+
+        forge.ping(ModuleSpec.of("puppetlabs/apache"));
     }
 
     private MockLowLevelHttpResponse response(int statusCode) {

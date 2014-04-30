@@ -20,7 +20,9 @@ package io.github.drrb.goforgepoller;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration;
 import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
 import com.thoughtworks.go.plugin.api.response.validation.ValidationResult;
+import io.github.drrb.test.NoLogging;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import static com.thoughtworks.go.plugin.api.material.packagerepository.Property.DISPLAY_NAME;
@@ -30,6 +32,9 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ForgePollerPluginConfigTest {
+
+    @Rule
+    public final NoLogging noLogging = NoLogging.rule();
 
     private ForgePollerPluginConfig config;
 
