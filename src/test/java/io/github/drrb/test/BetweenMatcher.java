@@ -65,7 +65,7 @@ public class BetweenMatcher<T extends Comparable<T>> extends TypeSafeMatcher<T> 
     private final T upper;
     private final Boolean upperInclusive;
 
-    public BetweenMatcher(T lower, Boolean lowerInclusive, T upper, Boolean upperInclusive) {
+    private BetweenMatcher(T lower, Boolean lowerInclusive, T upper, Boolean upperInclusive) {
         this.lower = lower;
         this.lowerInclusive = lowerInclusive;
         this.upper = upper;

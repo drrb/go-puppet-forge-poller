@@ -59,9 +59,7 @@ public class Log {
             XStream xstream = new XStream();
             args[i] = xstream.toXML(args[i]);
         }
-        if (isEnabled()) {
-            logFormatted(Level.DEBUG, format, args);
-        }
+        logFormatted(Level.DEBUG, format, args);
     }
 
     public void info(String format, Object... args) {
@@ -70,9 +68,7 @@ public class Log {
                 args[i] = Exceptions.render((Throwable) args[i]);
             }
         }
-        if (isEnabled()) {
-            logFormatted(Level.INFO, format, args);
-        }
+        logFormatted(Level.INFO, format, args);
     }
 
     private void logFormatted(Level level, String format, Object... args) {
@@ -81,9 +77,10 @@ public class Log {
     }
 
     protected void log(Level level, String message) {
-        switch (level) {
-            case DEBUG: logger.debug(message); break;
-            case INFO: logger.info(message); break;
+        if (level == Level.DEBUG) {
+            if (isEnabled()) logger.debug(message);
+        } else {
+            if (isEnabled()) logger.info(message);
         }
     }
 }

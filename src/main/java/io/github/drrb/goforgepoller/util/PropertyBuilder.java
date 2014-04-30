@@ -27,11 +27,11 @@ public class PropertyBuilder {
         return new PropertyBuilder(name);
     }
 
-    public PropertyBuilder(String name) {
+    private PropertyBuilder(String name) {
         this.property = new Property(name);
     }
 
-    public PropertyBuilder(String name, String value) {
+    private PropertyBuilder(String name, String value) {
         this.property = new Property(name, value);
     }
 

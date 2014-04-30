@@ -99,7 +99,7 @@ public class ForgePollerPluginConfigTest {
     }
 
     @Test
-    public void shouldAcceptRepoConfigIfForgeUrlIsNonHttp() throws Exception {
+    public void shouldRejectRepoConfigIfForgeUrlIsNonHttp() throws Exception {
         RepositoryConfiguration repoConfig = new RepositoryConfiguration();
         repoConfig.add(property(FORGE_URL, "ftp://example.com"));
 
