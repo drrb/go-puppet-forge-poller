@@ -20,6 +20,9 @@ package io.github.drrb.goforgepoller.util;
 import com.thoughtworks.go.plugin.api.logging.Logger;
 import com.thoughtworks.xstream.XStream;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 public class Log {
     private static final ThreadLocal<Boolean> globallyEnabled = new ThreadLocal<Boolean>() {
         @Override
@@ -47,7 +50,7 @@ public class Log {
     private final Logger logger;
 
     public enum Level {
-        DEBUG, INFO
+        DEBUG, INFO, ERROR
     }
 
     public Log(Logger logger) {
@@ -55,6 +58,7 @@ public class Log {
     }
 
     public void debug(String format, Object... args) {
+        args = args.clone();
         for (int i = 0; i < args.length; i++) {
             XStream xstream = new XStream();
             args[i] = xstream.toXML(args[i]);
@@ -63,12 +67,22 @@ public class Log {
     }
 
     public void info(String format, Object... args) {
+        args = args.clone();
         for (int i = 0; i < args.length; i++) {
             if (args[i] instanceof Throwable) {
                 args[i] = Exceptions.render((Throwable) args[i]);
             }
         }
         logFormatted(Level.INFO, format, args);
+    }
+
+    public void error(String message, Throwable cause) {
+        StringWriter stackTrace = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stackTrace);
+        cause.printStackTrace(printWriter);
+        printWriter.flush();
+        printWriter.close();
+        log(Level.ERROR, message + "\n" + stackTrace.toString());
     }
 
     private void logFormatted(Level level, String format, Object... args) {

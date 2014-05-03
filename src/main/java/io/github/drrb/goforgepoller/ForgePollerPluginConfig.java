@@ -23,6 +23,7 @@ import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfi
 import com.thoughtworks.go.plugin.api.response.validation.ValidationError;
 import com.thoughtworks.go.plugin.api.response.validation.ValidationResult;
 import io.github.drrb.goforgepoller.forge.Version;
+import io.github.drrb.goforgepoller.util.EntryPoint;
 import io.github.drrb.goforgepoller.util.Log;
 import io.github.drrb.goforgepoller.util.SaferConfiguration;
 
@@ -40,12 +41,16 @@ public class ForgePollerPluginConfig implements PackageMaterialConfiguration {
     public static final String LOWER_VERSION_BOUND_INCLUSIVE = "LOWER_VERSION_BOUND_INCLUSIVE";
     public static final String UPPER_VERSION_BOUND_EXCLUSIVE = "UPPER_VERSION_BOUND_EXCLUSIVE";
 
+    @Override
+    @EntryPoint
     public RepositoryConfiguration getRepositoryConfiguration() {
         RepositoryConfiguration repoConfig = new RepositoryConfiguration();
         repoConfig.add(property(FORGE_URL).withDisplayName("Forge URL").build());
         return repoConfig;
     }
 
+    @Override
+    @EntryPoint
     public PackageConfiguration getPackageConfiguration() {
         PackageConfiguration packageConfig = new PackageConfiguration();
         packageConfig.add(property(MODULE_NAME)
@@ -69,9 +74,8 @@ public class ForgePollerPluginConfig implements PackageMaterialConfiguration {
     }
 
     @Override
+    @EntryPoint
     public ValidationResult isRepositoryConfigurationValid(RepositoryConfiguration repositoryConfiguration) {
-        LOG.debug("isRepositoryConfigurationValid(%s)", repositoryConfiguration);
-
         SaferConfiguration configuration = new SaferConfiguration(repositoryConfiguration);
         String forgeUrl = configuration.get(FORGE_URL);
         LOG.info("Validating configuration for forge (URL = %s)", forgeUrl);
@@ -93,9 +97,8 @@ public class ForgePollerPluginConfig implements PackageMaterialConfiguration {
     }
 
     @Override
+    @EntryPoint
     public ValidationResult isPackageConfigurationValid(PackageConfiguration packageConfiguration, RepositoryConfiguration repositoryConfiguration) {
-        LOG.debug("isPackageConfigurationValid(%s, %s)", packageConfiguration, repositoryConfiguration);
-
         SaferConfiguration configuration = new SaferConfiguration(packageConfiguration);
         String moduleName = configuration.get(MODULE_NAME);
         String lowerVersionBound = configuration.get(LOWER_VERSION_BOUND_INCLUSIVE);

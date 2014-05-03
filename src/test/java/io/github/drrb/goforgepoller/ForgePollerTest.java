@@ -25,6 +25,7 @@ import io.github.drrb.goforgepoller.forge.Forge;
 import io.github.drrb.goforgepoller.forge.ModuleSpec;
 import io.github.drrb.goforgepoller.forge.ModuleVersion;
 import io.github.drrb.goforgepoller.forge.Version;
+import io.github.drrb.goforgepoller.util.Log;
 import io.github.drrb.test.NoLogging;
 import org.junit.Before;
 import org.junit.Rule;
@@ -58,7 +59,6 @@ public class ForgePollerTest {
     private ModuleSpec.Factory moduleSpecFactory;
     @Mock
     private ModuleSpec moduleSpec;
-
     private RepositoryConfiguration repoConfig;
     private PackageConfiguration packageConfig;
     private ModuleVersion moduleVersion;

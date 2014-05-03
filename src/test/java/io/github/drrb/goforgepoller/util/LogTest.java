@@ -23,6 +23,8 @@ import org.junit.Test;
 import java.util.LinkedList;
 
 import static java.util.Arrays.asList;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.startsWith;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -58,5 +60,13 @@ public class LogTest {
         log.info("INFO: %s", exception);
 
         verify(log).log(Log.Level.INFO, "INFO: Failure (Cause)");
+    }
+
+    @Test
+    public void shouldPrintStackTraceForErrorMessages() throws Exception {
+        Exception exception = new Exception("something happened");
+        log.error("Error", exception);
+
+        verify(log).log(eq(Log.Level.ERROR), startsWith("Error\njava.lang.Exception: something happened"));
     }
 }

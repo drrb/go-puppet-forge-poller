@@ -84,7 +84,10 @@
                 <artifactId>cobertura-maven-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
-                    <format>xml</format>
+                    <formats>
+                        <format>html</format>
+                        <format>xml</format>
+                    </formats>
                 </configuration>
             </plugin>
 
@@ -162,6 +165,11 @@
             <groupId>com.google.http-client</groupId>
             <artifactId>google-http-client-jackson2</artifactId>
             <version>1.18.0-rc</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-assistedinject</artifactId>
+            <version>3.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.findbugs</groupId>

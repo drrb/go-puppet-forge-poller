@@ -26,26 +26,29 @@ import io.github.drrb.goforgepoller.forge.Forge;
 import io.github.drrb.goforgepoller.forge.ModuleSpec;
 import io.github.drrb.goforgepoller.forge.ModuleVersion;
 import io.github.drrb.goforgepoller.forge.Version;
+import io.github.drrb.goforgepoller.util.EntryPoint;
 import io.github.drrb.goforgepoller.util.Log;
+
+import javax.inject.Inject;
 
 import static io.github.drrb.goforgepoller.util.Results.error;
 import static io.github.drrb.goforgepoller.util.Results.success;
 
 public class ForgePoller implements PackageMaterialPoller {
 
-    private static final Log LOG = Log.getLogFor(ForgePoller.class);
+    private final Log LOG = Log.getLogFor(ForgePoller.class);
     private final Forge.Factory forgeFactory;
     private final ModuleSpec.Factory moduleSpecFactory;
 
+    @Inject
     public ForgePoller(Forge.Factory forgeFactory, ModuleSpec.Factory moduleSpecFactory) {
         this.forgeFactory = forgeFactory;
         this.moduleSpecFactory = moduleSpecFactory;
     }
 
     @Override
+    @EntryPoint
     public Result checkConnectionToRepository(RepositoryConfiguration repositoryConfiguration) {
-        LOG.debug("checkConnectionToRepository(%s)", repositoryConfiguration);
-
         Forge forge = forgeFactory.build(repositoryConfiguration);
         LOG.info("Checking connection to forge at %s", forge);
 
@@ -58,9 +61,8 @@ public class ForgePoller implements PackageMaterialPoller {
     }
 
     @Override
+    @EntryPoint
     public Result checkConnectionToPackage(PackageConfiguration packageConfiguration, RepositoryConfiguration repositoryConfiguration) {
-        LOG.debug("checkConnectionToPackage(%s, %s)", packageConfiguration, repositoryConfiguration);
-
         ModuleSpec moduleSpec = moduleSpecFactory.build(packageConfiguration);
         Forge forge = forgeFactory.build(repositoryConfiguration);
         LOG.info("Checking connection to module %s in forge at %s", moduleSpec, forge);
@@ -74,9 +76,8 @@ public class ForgePoller implements PackageMaterialPoller {
     }
 
     @Override
+    @EntryPoint
     public PackageRevision getLatestRevision(PackageConfiguration packageConfiguration, RepositoryConfiguration repositoryConfiguration) {
-        LOG.debug("getLatestRevision(%s, %s)", packageConfiguration, repositoryConfiguration);
-
         ModuleSpec module = moduleSpecFactory.build(packageConfiguration);
         Forge forge = forgeFactory.build(repositoryConfiguration);
 
@@ -91,9 +92,8 @@ public class ForgePoller implements PackageMaterialPoller {
     }
 
     @Override
+    @EntryPoint
     public PackageRevision latestModificationSince(PackageConfiguration packageConfiguration, RepositoryConfiguration repositoryConfiguration, PackageRevision lastKnownRevision) {
-        LOG.debug("latestModificationSince(%s, %s, %s)", packageConfiguration, repositoryConfiguration, lastKnownRevision);
-
         ModuleSpec module = moduleSpecFactory.build(packageConfiguration);
         Forge forge = forgeFactory.build(repositoryConfiguration);
         Version lastKnownReleaseVersion = Version.of(lastKnownRevision.getRevision());
