@@ -20,11 +20,8 @@ package io.github.drrb.goforgepoller;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.thoughtworks.go.plugin.api.annotation.Extension;
-import com.thoughtworks.go.plugin.api.material.packagerepository.PackageMaterialConfiguration;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageMaterialPoller;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageMaterialProvider;
-import io.github.drrb.goforgepoller.forge.Forge;
-import io.github.drrb.goforgepoller.forge.ModuleSpec;
 
 @Extension
 public class ForgeProvider implements PackageMaterialProvider {
