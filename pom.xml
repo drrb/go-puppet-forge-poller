@@ -38,6 +38,21 @@
         </license>
     </licenses>
 
+    <scm>
+        <connection>scm:git:ssh://git@github.com:drrb/go-puppet-forge-poller.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:drrb/go-puppet-forge-poller.git</developerConnection>
+        <url>https://github.com/drrb/go-puppet-forge-poller</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>fake.repo</id>
+            <name>Fake Release Repository</name>
+            <url>file://${project.build.directory}/release-repo</url>
+        </repository>
+    </distributionManagement>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <go.version>13.4.1</go.version>
