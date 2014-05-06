@@ -7,6 +7,21 @@ A [Go](http://www.go.cd) plugin that polls a Puppet forge
 
 ## Installing
 
+Choose a version of the plugin according to your Go version:
+
+<table>
+    <tr>
+        <th>Go Version</th>
+        <th>Go Puppet Forge Poller Plugin Version</th>
+    </tr>
+    <tr>
+        <td>13.4.x</td>
+        <td>1.0.0</td>
+    </tr>
+</table>
+
+Then install the plugin into the Go server's `plugins/external` directory and restart the Go server:
+
 ```
 sudo -u go wget --directory-prefix=/var/lib/go-server/plugins/external https://github.com/drrb/go-puppet-forge-poller/releases/download/1.0.0/go-puppet-forge-poller-1.0.0.jar
 sudo service go-server restart
@@ -14,21 +29,17 @@ sudo service go-server restart
 
 ## Usage
 
-![Add a Forge](https://raw.githubusercontent.com/drrb/go-puppet-forge-poller/master/doc/1_add_repo.png)
-![Add a Module](https://raw.githubusercontent.com/drrb/go-puppet-forge-poller/master/doc/2_add_package.png)
+### Add a Forge
 
-## Compatibility
+First, add a Puppet forge as a *package repository* to check for modules:
 
-<table>
-    <tr>
-        <th>Go Version</th>
-        <th>Go Puppet Forge Poller Version</th>
-    </tr>
-    <tr>
-        <td>13.4.x</td>
-        <td>1.0.0</td>
-    </tr>
-</table>
+![adding a forge](https://raw.githubusercontent.com/drrb/go-puppet-forge-poller/master/doc/1_add_repo.png)
+
+### Add a Module
+
+Then, when you're creating a pipline, add a module from the forge as a *package*:
+
+![adding a module](https://raw.githubusercontent.com/drrb/go-puppet-forge-poller/master/doc/2_add_package.png)
 
 ## Building From Source
 
