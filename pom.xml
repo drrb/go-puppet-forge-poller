@@ -39,8 +39,8 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:ssh://git@github.com:drrb/go-puppet-forge-poller.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com:drrb/go-puppet-forge-poller.git</developerConnection>
+        <connection>scm:git:ssh://git@github.com/drrb/go-puppet-forge-poller.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/drrb/go-puppet-forge-poller.git</developerConnection>
         <url>https://github.com/drrb/go-puppet-forge-poller</url>
         <tag>HEAD</tag>
     </scm>
