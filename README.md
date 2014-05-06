@@ -12,6 +12,19 @@ sudo -u go wget --directory-prefix=/var/lib/go-server/plugins/external https://g
 sudo service go-server restart
 ```
 
+## Compatibility
+
+<table>
+    <tr>
+        <th>Go Version</th>
+        <th>Go Puppet Forge Poller Version</th>
+    </tr>
+    <tr>
+        <td>13.4.x</td>
+        <td>1.0.0</td>
+    </tr>
+</table>
+
 ## Building From Source
 
 ```
