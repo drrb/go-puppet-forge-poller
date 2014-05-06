@@ -43,8 +43,13 @@ Then, when you're creating a pipline, add a module from the forge as a *package*
 
 ## Building From Source
 
+Assuming you have Maven installed, you can build the plugin from source as follows.
+
 ```
+# Download the Go APIs (not in Maven Central yet)
 $ ./download-dependencies.sh
+
+# Build the plugin. The plugin will end up in target/go-puppet-forge-poller-<version>.jar
 $ mvn package
 ```
 
