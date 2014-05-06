@@ -5,7 +5,14 @@ A [Go](http://www.go.cd) plugin that polls a Puppet forge
 [![Build Status](https://travis-ci.org/drrb/go-puppet-forge-poller.svg?branch=master)](https://travis-ci.org/drrb/go-puppet-forge-poller)
 [![Coverage Status](https://coveralls.io/repos/drrb/go-puppet-forge-poller/badge.png?branch=master)](https://coveralls.io/r/drrb/go-puppet-forge-poller?branch=master)
 
-## Building
+## Installing
+
+```
+sudo -u go wget --directory-prefix=/var/lib/go-server/plugins/external https://github.com/drrb/go-puppet-forge-poller/releases/download/1.0.0/go-puppet-forge-poller-1.0.0.jar
+sudo service go-server restart
+```
+
+## Building From Source
 
 ```
 $ ./download-dependencies.sh
