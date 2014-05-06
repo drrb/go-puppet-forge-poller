@@ -12,6 +12,11 @@ sudo -u go wget --directory-prefix=/var/lib/go-server/plugins/external https://g
 sudo service go-server restart
 ```
 
+## Usage
+
+![Add a Forge](https://raw.githubusercontent.com/drrb/go-puppet-forge-poller/master/doc/1_add_repo.png)
+![Add a Module](https://raw.githubusercontent.com/drrb/go-puppet-forge-poller/master/doc/2_add_package.png)
+
 ## Compatibility
 
 <table>
