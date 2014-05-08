@@ -42,14 +42,14 @@ Choose a version of the plugin according to your Go version:
     </tr>
     <tr>
         <td>13.4.x</td>
-        <td>1.0.0</td>
+        <td>1.0.1</td>
     </tr>
 </table>
 
 Then install the plugin into the Go server's `plugins/external` directory and restart the Go server:
 
 ```
-sudo -u go wget --directory-prefix=/var/lib/go-server/plugins/external https://github.com/drrb/go-puppet-forge-poller/releases/download/1.0.0/go-puppet-forge-poller-1.0.0.jar
+sudo -u go wget --directory-prefix=/var/lib/go-server/plugins/external https://github.com/drrb/go-puppet-forge-poller/releases/download/1.0.1/go-puppet-forge-poller-1.0.1.jar
 sudo service go-server restart
 ```
 
