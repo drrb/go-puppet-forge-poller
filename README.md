@@ -21,6 +21,16 @@ Then, when you're creating a pipline, add a module from the forge as a *package*
 
 ### Download the Module
 
+During your pipeline, you can download the module using the environment variables provided:
+
+```
+[go] setting environment variable 'GO_PACKAGE_PUPPET_FORGE_PUPPETLABS_STDLIB_LABEL' to value '4.1.0'
+[go] setting environment variable 'GO_REPO_PUPPET_FORGE_PUPPETLABS_STDLIB_FORGE_URL' to value 'http://forge.puppetlabs.com'
+[go] setting environment variable 'GO_PACKAGE_PUPPET_FORGE_PUPPETLABS_STDLIB_MODULE_NAME' to value 'puppetlabs/stdlib'
+[go] setting environment variable 'GO_PACKAGE_PUPPET_FORGE_PUPPETLABS_STDLIB_VERSION' to value '4.1.0'
+[go] setting environment variable 'GO_PACKAGE_PUPPET_FORGE_PUPPETLABS_STDLIB_LOCATION' to value 'http://forge.puppetlabs.com/system/releases/p/puppetlabs/puppetlabs-stdlib-4.1.0.tar.gz'
+```
+
 ## Installing
 
 Choose a version of the plugin according to your Go version:
