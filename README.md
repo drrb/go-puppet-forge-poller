@@ -3,7 +3,7 @@
 A [Go](http://www.go.cd) plugin that polls a Puppet forge
 
 [![Build Status](https://travis-ci.org/drrb/go-puppet-forge-poller.svg?branch=master)](https://travis-ci.org/drrb/go-puppet-forge-poller)
-[![Coverage Status](https://coveralls.io/repos/drrb/go-puppet-forge-poller/badge.png?branch=master)](https://coveralls.io/r/drrb/go-puppet-forge-poller?branch=master)
+[![Coverage Status](https://img.shields.io/coveralls/drrb/go-forge-poller.svg)](https://coveralls.io/r/drrb/go-puppet-forge-poller?branch=master)
 
 ## Usage
 
