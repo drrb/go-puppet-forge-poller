@@ -42,7 +42,11 @@ Choose a version of the plugin according to your Go version:
     </tr>
     <tr>
         <td>13.4.x</td>
-        <td>1.0.1</td>
+        <td>1.0.x</td>
+    </tr>
+    <tr>
+        <td>14.1.x</td>
+        <td>2.0.x</td>
     </tr>
 </table>
 
