@@ -17,7 +17,9 @@
  */
 package io.github.drrb.goforgepoller.util;
 
-import com.thoughtworks.go.plugin.api.material.packagerepository.Property;
+
+import com.thoughtworks.go.plugin.api.config.Property;
+import com.thoughtworks.go.plugin.api.material.packagerepository.PackageMaterialProperty;
 
 public class PropertyBuilder {
 
@@ -28,11 +30,11 @@ public class PropertyBuilder {
     }
 
     private PropertyBuilder(String name) {
-        this.property = new Property(name);
+        this.property = new PackageMaterialProperty(name);
     }
 
     private PropertyBuilder(String name, String value) {
-        this.property = new Property(name, value);
+        this.property = new PackageMaterialProperty(name, value);
     }
 
     public static Property property(String name, String value) {

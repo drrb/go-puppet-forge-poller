@@ -25,7 +25,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import static com.thoughtworks.go.plugin.api.material.packagerepository.Property.DISPLAY_NAME;
+import static com.thoughtworks.go.plugin.api.config.Property.DISPLAY_NAME;
 import static io.github.drrb.goforgepoller.ForgePollerPluginConfig.*;
 import static io.github.drrb.goforgepoller.util.PropertyBuilder.property;
 import static org.hamcrest.CoreMatchers.*;
