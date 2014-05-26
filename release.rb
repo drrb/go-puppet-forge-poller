@@ -24,7 +24,7 @@ require 'net/http'
 include REXML
 
 def run(command, *args)
-    system "#{command}  #{args.join ' '}" or raise "mvn command failed"
+    system "#{command}  #{args.join ' '}" or raise "command failed"
 end
 
 def mvn(*commands)
