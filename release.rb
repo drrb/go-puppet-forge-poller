@@ -114,7 +114,6 @@ release_version = read_xpath("pom.xml.tag", "/project/version").text
 mvn "release:clean", "release:prepare", "release:perform"
 git "push"
 
-release_version = "1.0.1"
 target_go_version = read_xpath("pom.xml", "/project/properties/go.version").text
 github = Github.new
 data = {
