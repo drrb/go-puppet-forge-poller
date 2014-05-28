@@ -61,11 +61,13 @@ public class ForgePollerPluginConfig implements PackageMaterialConfiguration {
         packageConfig.add(property(LOWER_VERSION_BOUND_INCLUSIVE)
                 .withRequired(false)
                 .withDisplayName("Version to poll >=")
+                .withPartOfIdentity(false)
                 .withDisplayOrder(1)
                 .build());
         packageConfig.add(property(UPPER_VERSION_BOUND_EXCLUSIVE)
                 .withRequired(false)
                 .withDisplayName("Version to poll <")
+                .withPartOfIdentity(false)
                 .withDisplayOrder(2)
                 .build());
         return packageConfig;
