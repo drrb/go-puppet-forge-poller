@@ -48,6 +48,10 @@ Choose a version of the plugin according to your Go version:
         <td>14.1.x</td>
         <td>2.0.x</td>
     </tr>
+    <tr>
+        <td>14.2.x</td>
+        <td>3.0.x</td>
+    </tr>
 </table>
 
 Then install the plugin into the Go server's `plugins/external` directory and restart the Go server:
