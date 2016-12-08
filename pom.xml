@@ -52,7 +52,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <go.version>14.2.0</go.version>
+        <go.version>16.11.0</go.version>
     </properties>
 
     <build>
@@ -172,10 +172,20 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.thoughtworks</groupId>
+            <groupId>cd.go.plugin</groupId>
             <artifactId>go-plugin-api</artifactId>
             <version>${go.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>cd.go.plugin</groupId>
+            <artifactId>gocd-package-material-plugin-shim</artifactId>
+            <version>16.12.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.3.1</version>
         </dependency>
         <dependency>
             <groupId>com.google.http-client</groupId>
