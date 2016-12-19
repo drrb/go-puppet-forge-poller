@@ -23,7 +23,6 @@ import com.thoughtworks.go.plugin.api.annotation.Extension;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageMaterialPoller;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageMaterialProvider;
 
-@Extension
 public class ForgeProvider implements PackageMaterialProvider {
 
     private final Injector injector;
